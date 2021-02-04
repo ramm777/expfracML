@@ -48,3 +48,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+venv1/
+data/
+selected_models/
