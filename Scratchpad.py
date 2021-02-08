@@ -51,6 +51,28 @@ import scipy.io as sio
 # How to set figure size
 # fig.set_size_inches(10, 6)
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Plot testing old
+
+# Plot vs each item
+# fig2 = plt.figure(2, figsize=(15, 8))
+# ax1 = fig2.add_subplot(1, 2, 1)
+# ax2 = fig2.add_subplot(1, 2, 2)
+# ax1.plot(range(implot), predicted[:implot], 'r+', label='Predicted perm')
+# ax1.plot(range(implot), test_Y_scaled[:implot], 'bo', label='Actual perm')
+# ax1.title.set_text('Predicted vs Actual, scaled')
+# ax1.legend()
+# ax1.set_ylabel("Permeability, scaled [0 to 1]")
+# ax1.set_xlabel("Item no.")
+# ax2.plot(range(implot), predicted_unscaled[:implot], 'r+', label='Predicted perm')
+# ax2.plot(range(implot), test_Y[:implot], 'bo', label='Actual perm')
+# ax2.title.set_text('Predicted vs Actual, mD/1e4')
+# ax2.legend()
+# ax2.set_ylabel("Permeability, mD/1e4")
+# ax2.set_xlabel("Item no.")
+# # plt.show()
+# plt.close()
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Print formattion

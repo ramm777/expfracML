@@ -13,7 +13,7 @@ import CNNarchitectures as ff1
 start = time.time()
 
 
-def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses):
+def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses, trainedModel=[]):
     '''
     Load training data, split to validation and training and run training and save trained model
     '''
@@ -40,10 +40,15 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     Valid_x = Valid_x / 255.
 
 
-    # Create model and fit
-    model = ff1.createCNNarchitecture(CNNarchitecture, imsize_x, imsize_y)
-    model.compile(loss=keras.losses.mean_squared_error, optimizer=keras.optimizers.Adam()) # loss=keras.losses.mean_absolute_percentage_error
-    model.summary()
+    if trainedModel == []:
+        print('Train new model')
+        model = ff1.createCNNarchitecture(CNNarchitecture, imsize_x, imsize_y) # Create model and fit
+        model.compile(loss=keras.losses.mean_squared_error, optimizer=keras.optimizers.Adam())  # loss=keras.losses.mean_absolute_percentage_error
+        model.summary()
+    else:
+        print('Continue training of pretrained model')
+        model = TrainedModel;
+        model.summary()
 
 
     result = model.fit(Train_x, Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
@@ -80,7 +85,7 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     return model, fig1, losses
 
 
-def runTesting(implot, datapath, modelpath, imsize_x, imsize_y, scaler, losses):
+def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     '''
     Load saved ML model and testing data and run evaluation and prediction
         Inputs:
@@ -125,76 +130,82 @@ def runTesting(implot, datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     losses.append(res4)
 
 
-    fig2 = plt.figure(2, figsize=(15, 8))
-    ax1 = fig2.add_subplot(1,2,1)
-    ax2 = fig2.add_subplot(1,2,2)
-    ax1.plot(range(implot), predicted[:implot], 'r+', label='Predicted perm')
-    ax1.plot(range(implot), test_Y_scaled[:implot], 'bo', label='Actual perm')
-    ax1.title.set_text('Predicted vs Actual, scaled')
-    ax1.legend()
-    ax1.set_ylabel("Permeability, scaled [0 to 1]")
-    ax1.set_xlabel("Item no.")
-    ax2.plot(range(implot), predicted_unscaled[:implot], 'r+', label='Predicted perm')
-    ax2.plot(range(implot), test_Y[:implot], 'bo', label='Actual perm')
-    ax2.title.set_text('Predicted vs Actual, mD/1e4')
-    ax2.legend()
-    ax2.set_ylabel("Permeability, mD/1e4")
-    ax2.set_xlabel("Item no.")
-    #plt.show()
+    # Plot
+    fig2 = plt.figure(2, figsize=(8, 6))
+    plt.plot(test_Y, predicted_unscaled, 'r+', label='Predicted vs. Actual permeability')
+    plt.plot(test_Y, test_Y, label='Linear')
+    plt.ylabel("Predicted permeability, md/1e4")
+    plt.xlabel("Actual (test) permeability, md/1e4")
+    plt.legend()
+    # plt.show()
     plt.close()
 
     return fig2, losses
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Run
+# Inputs for training
 
 
 # Inputs train
-datapath_y = "data\\Train\\Augmented_centered\\permf.csv"    # Augmented, centered
-datapath_x = "data\\Train\\Augmented_centered\\train_X.npy"  # Augmented, centered
+datapath_y = "data\\Train\\Augmented_centered\\permf.csv"       # Augmented, centered
+datapath_x = "data\\Train\\Augmented_centered\\train_X.npy"     # Augmented, centered
+datapath = "\\expfracML\\data\\Test2000\\Augmented_centered\\"  # X and y data  # Test
 imsize_x = 128
 imsize_y = 128
 batch_size = 32           # Number of training examples utilized in one iteration, larger is better
-epochs = 2
+epochs = 20
 CNNarchitecture = [4]     # [1,2,3,4]
-
-
-# Inputs test
-datapath = "\\expfracML\\data\\Test2000\\Augmented_centered\\"  # X and y data
-testItemsplot = 20                 # number of items in test data to plot
-
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
 
-losses = []
-for j in range(0, len(CNNarchitecture)):
-    for i in range(1,6):
-
-        str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
-        str2 = 'Subcase: ' + str(i)
-        losses.append(str1)
-        losses.append(str2)
-        print("Starting ..." + '\n' + str1 + '\n' + str2)
+#-----------------------------------------------------------------------------------------------------------------------
+# Run and save results
 
 
-        # Run training
-        model, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, losses)
-        modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
-        model.save(modelname)
+# Continue traning of pretrained model
+modelpath = "selected_models\\model_cnn4_6.h5py"
+model = km.load_model(modelpath, custom_objects=None, compile=True)
+model, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses=[], trainedModel=[])
 
-        # Run testing
-        modelpath = modelname
-        fig2, losses = runTesting(testItemsplot, datapath, modelpath, imsize_x, imsize_y, scaler, losses)
 
-        # Save results to pdf
-        pdf = PdfPages('results\\results' + str(CNNarchitecture[j]) + "_" + str(i) + '.pdf')
-        pdf.savefig(fig1)
-        pdf.savefig(fig2)
-        pdf.close()
+# Run single testing
+#modelpath = "selected_models\\model_cnn4_1.h5py"
+#fig2, losses = runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses=[])
+# Save results to pdf
+#pdf = PdfPages('results\\results' + str(0) + "_" + str(0) + '.pdf')
+#pdf.savefig(fig2)
+#pdf.close()
 
-        del fig1, fig2, model
+
+# Run batches of training/testing on many architectures/iterations
+# for j in range(0, len(CNNarchitecture)):
+#     for i in range(1,6):
+#
+#         str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
+#         str2 = 'Subcase: ' + str(i)
+#         losses.append(str1)
+#         losses.append(str2)
+#         print("Starting ..." + '\n' + str1 + '\n' + str2)
+#
+#
+#         # Run training
+#         model, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, losses=[])
+#         modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
+#         model.save(modelname)
+#
+#         # Run testing
+#         modelpath = modelname
+#         fig2, losses = runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses)
+#
+#         # Save results to pdf
+#         pdf = PdfPages('results\\results' + str(CNNarchitecture[j]) + "_" + str(i) + '.pdf')
+#         pdf.savefig(fig1)
+#         pdf.savefig(fig2)
+#         pdf.close()
+#
+#         del fig1, fig2, model
 
 
 np.savetxt('results\\results.txt', np.array(losses), delimiter=',', fmt="%s")

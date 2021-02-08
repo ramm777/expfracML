@@ -36,9 +36,14 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
 
+        model.add(Conv2D(64, kernel_size=(3, 3), input_shape=(imsize_x, imsize_y, 1), padding='same'))
+        model.add(Activation('relu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
+
         model.add(Flatten())
-        model.add(Dense(128, activation='relu'))
-        model.add(Dense(1, activation='linear'))
+        model.add(Dense(32))
+        model.add(Dense(1))
 
     # -----------------------------------------------------------------------------------------------------------------------
 
