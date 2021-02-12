@@ -47,7 +47,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
     # -----------------------------------------------------------------------------------------------------------------------
 
-    if no == 2:
+    elif no == 2:
 
         model = km.Sequential()
 
@@ -86,7 +86,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
     # -----------------------------------------------------------------------------------------------------------------------
 
-    if no == 3:  # based on PyImage: https://www.pyimagesearch.com/2019/01/28/keras-regression-and-cnns/
+    elif no == 3:  # based on PyImage: https://www.pyimagesearch.com/2019/01/28/keras-regression-and-cnns/
 
         inputShape = (imsize_x, imsize_y, 1)  # image height, width and depth (no of channels, black/white = 1)
         inputs = km.Input(shape=inputShape)
@@ -128,7 +128,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
     # -----------------------------------------------------------------------------------------------------------------------
 
-    if no == 4:  # based on chemical concentration model: https://stats.stackexchange.com/questions/335836/cnn-architectures-for-regression
+    elif no == 4:  # based on chemical concentration model: https://stats.stackexchange.com/questions/335836/cnn-architectures-for-regression
 
         inputShape = (imsize_x, imsize_y, 1)  # image height, width and depth (no of channels, black/white = 1)
         inputs = km.Input(shape=inputShape)
@@ -185,7 +185,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model = km.Model(inputs, x)
 
     else:
-        print('Select CNN architecture: 1, 2 ...')
+        print('Warning: select CNN architecture: 1, 2 ...')
 
 
     return model

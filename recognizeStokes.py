@@ -65,7 +65,7 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     losses.append(res1)
     losses.append(res2)
 
-    fig1 = plt.figure(1, figsize=(15, 8))
+    fig1 = plt.figure(1, figsize=(15, 6))
     ax1 = fig1.add_subplot(121)
     ax2 = fig1.add_subplot(122)
     ax1.plot(epochs, result.history['loss'], 'bo', label='Training loss')
@@ -81,6 +81,10 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     #ax2.legend()
     #ax2.set_ylabel("Loss")
     #ax2.set_xlabel("Epochs")
+    fig1.text(0.6, 0.52, 'Results training: ')
+    fig1.text(0.6, 0.5, losses[:2])
+    fig1.text(0.6, 0.48, losses[2])
+    fig1.text(0.6, 0.46, losses[3])
     #plt.show()
     plt.close()
 
@@ -133,12 +137,20 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
 
     # Plot
-    fig2 = plt.figure(2, figsize=(8, 6))
-    plt.plot(test_Y, predicted_unscaled, 'r+', label='Predicted vs. Actual permeability')
-    plt.plot(test_Y, test_Y, label='Linear')
-    plt.ylabel("Predicted permeability, md/1e4")
-    plt.xlabel("Actual (test) permeability, md/1e4")
-    plt.legend()
+    fig2 = plt.figure(2, figsize=(15, 6))
+    ax1 = fig2.add_subplot(121)
+    ax2 = fig2.add_subplot(122)
+    ax1.plot(test_Y, predicted_unscaled, 'r+', label='Predicted vs. Actual permeability')
+    ax1.plot(test_Y, test_Y, label='Linear')
+    ax1.set_ylabel("Predicted permeability, md/1e4")
+    ax1.set_xlabel("Actual (test) permeability, md/1e4")
+    ax1.legend()
+    fig2.text(0.6, 0.52, 'Results train/test: ')
+    fig2.text(0.6, 0.5, losses[:2])
+    fig2.text(0.6, 0.48, losses[2])
+    fig2.text(0.6, 0.46, losses[3])
+    fig2.text(0.6, 0.44, losses[4])
+    fig2.text(0.6, 0.42, losses[5])
     # plt.show()
     plt.close()
 
@@ -149,7 +161,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 # Inputs for training
 
 
-whatToRun = "singleTesting"  # Select from: "continueTraining", "singleTesting", "runBatches"
+whatToRun = "runBatches"  # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
 # Inputs train
@@ -159,8 +171,8 @@ datapath = "\\expfracML\\data\\Test2000\\Augmented_centered\\"  # X and y data  
 imsize_x = 128
 imsize_y = 128
 batch_size = 16           # Number of training examples utilized in one iteration, larger is better
-epochs = 20
-CNNarchitecture = [4]
+epochs = 40
+CNNarchitecture = [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
@@ -171,10 +183,11 @@ scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
-    losses=[]
+    losses_all = []
     for j in range(0, len(CNNarchitecture)):
-        for i in range(1,6):
+        for i in range(1,5):
 
+             losses = []
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
              str2 = 'Subcase: ' + str(i)
              losses.append(str1)
@@ -202,19 +215,21 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              pdf.savefig(fig2)
              pdf.close()
 
+             losses_all = losses_all.extend(losses)
+
              del fig1, fig2, model
 
 
 if whatToRun == "continueTraining":  # Continue traning of pre-trained model
 
-    modelname = "model_cnn1_3.h5py"
+    modelname = "model_cnn1_1.h5py"
     modelpath = "selected_models\\" + modelname
     model = km.load_model(modelpath, custom_objects=None, compile=True)
 
     # Run training
     model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses=[], trainedModel=model)
     modelname_new = modelname[:-5] + "_cont" + ".h5py"
-    model.save(modelname)
+    model.save(modelname[:-5] + "_cont.h5py")
 
     # Save results
     result_pd = pd.DataFrame(result.history)
@@ -228,14 +243,14 @@ if whatToRun == "continueTraining":  # Continue traning of pre-trained model
 
 if whatToRun == "singleTesting":  # Run single testing
 
-    modelpath = "model_cnn1_3.h5py"
+    modelpath = "model_cnn1_1.h5py"
     fig2, losses = runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses=[])
 
-    pdf = PdfPages(modelpath[:-5] + '.pdf')  # Save results to pdf
+    pdf = PdfPages("results\\"+ modelpath[:-5] + ".pdf")  # Save results to pdf
     pdf.savefig(fig2)
     pdf.close()
 
 
-np.savetxt('results\\results.txt', np.array(losses), delimiter=',', fmt="%s")
+np.savetxt('results\\results.txt', np.array(losses_all), delimiter=',', fmt="%s")
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
