@@ -17,7 +17,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model = km.Sequential()
 
         model.add(Conv2D(32, kernel_size=(3, 3), input_shape=(imsize_x, imsize_y, 1), padding='same'))
-        model.add(Activation('selu'))
+        model.add(Activation('selu')) # 'relu', 'elu'
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
 
@@ -79,9 +79,9 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
         model.add(Flatten())
         model.add(Dense(1))
-        #model.add(LeakyReLU(alpha=0.1))
-        #model.add(Dense(32, activation='linear'))
-        #model.add(Dense(1))
+        model.add(LeakyReLU(alpha=0.1))
+        model.add(Dense(32, activation='linear'))
+        model.add(Dense(1))
 
 
     # -----------------------------------------------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         x = Activation("selu")(x)
 
         x = Flatten()(x)
-        #x = Dense(16)(x)
+        x = Dense(16)(x)
         x = Dense(1)(x)
 
         model = km.Model(inputs, x)

@@ -172,7 +172,7 @@ datapath = Path("data/Test2000/Augmented_centered/")    # X and y data  # Test
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
-epochs = 2
+epochs = 60
 CNNarchitecture = [1]                                   # [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
@@ -187,7 +187,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
     losses_all = []
     for j in range(0, len(CNNarchitecture)):
-        for i in range(1,5):
+        for i in range(1,6):
 
              losses = []
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
