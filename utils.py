@@ -17,7 +17,7 @@ def getScaler(datapath):
        Get sclaer for target using 16000 targets to use for testing
     '''
 
-    train_Y = np.loadtxt(datapath)
+    train_Y = np.loadtxt(datapath / "permf.csv")
     train_Y = train_Y / 1e4  # convert to 'mD/1e4'
 
     # Scale from 0 to 1
@@ -41,7 +41,7 @@ def loadPreprocessImages(datapath_x, imnum, coarse_imsize_x, coarse_imsize_y):
     '''
 
     for i in range(1, imnum + 1):
-        image_path = datapath_x + str(i) +".jpg"
+        image_path = datapath_x / str(i) +".jpg"
         image = Image.open(image_path)
         image_resized = image.resize((coarse_imsize_x, coarse_imsize_y))
         image_grey = image_resized.convert('L')

@@ -7,6 +7,7 @@ import keras
 import keras.models as km
 
 import pandas as pd
+from pathlib import Path
 
 import time
 import utils as ff
@@ -21,11 +22,11 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     '''
 
     #train_X = ff.loadPreprocessImages(datapath, imnum, coarse_imsize_x, coarse_imsize_y)
-    train_X = np.load(datapath_x)
+    train_X = np.load(datapath_x / "train_X.npy")
     train_X = train_X.astype('float32')
 
 
-    train_Y = np.loadtxt(datapath_y)
+    train_Y = np.loadtxt(datapath_y / "permf.csv")
     train_Y = train_Y / 1e4  # convert to 'mD/1e4'
     train_Y = train_Y.reshape(-1, 1)
     train_Y_scaled = scaler.transform(train_Y)
@@ -104,7 +105,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
     '''
 
-    test_X = np.load(datapath + "train_X.npy")
+    test_X = np.load(datapath / "train_X.npy")
     print('Running testing... ')
 
 
@@ -113,7 +114,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     test_X = test_X / 255.
 
 
-    test_Y = np.loadtxt(datapath + "permf.csv")
+    test_Y = np.loadtxt(datapath / "permf.csv")
     test_Y = test_Y / 1e4  # convert to 'mD/1e4'
     test_Y = test_Y.reshape(-1, 1)
     test_Y_scaled = scaler.transform(test_Y)
@@ -165,17 +166,18 @@ whatToRun = "runBatches"  # Select from: "continueTraining", "singleTesting", "r
 
 
 # Inputs train
-datapath_y = "data\\Train\\Augmented_centered\\permf.csv"       # Augmented, centered
-datapath_x = "data\\Train\\Augmented_centered\\train_X.npy"     # Augmented, centered
-datapath = "\\expfracML\\data\\Test2000\\Augmented_centered\\"  # X and y data  # Test
+datapath_y = Path("data/Train/Augmented_centered/")     # Augmented, centered
+datapath_x = Path("data/Train/Augmented_centered/")     # Augmented, centered
+datapath = Path("data/Test2000/Augmented_centered/")    # X and y data  # Test
 imsize_x = 128
 imsize_y = 128
-batch_size = 16           # Number of training examples utilized in one iteration, larger is better
-epochs = 40
-CNNarchitecture = [1,4]
+batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
+epochs = 2
+CNNarchitecture = [1]                                   # [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
+path_results = Path('results/')
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Run and save results
@@ -210,7 +212,8 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              fig2, losses = runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses)
 
              # Save plots to pdf
-             pdf = PdfPages('results\\results' + str(CNNarchitecture[j]) + "_" + str(i) + '.pdf')
+             pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
+             pdf = PdfPages(path_results / pdfname)
              pdf.savefig(fig1)
              pdf.savefig(fig2)
              pdf.close()
@@ -220,11 +223,11 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              del fig1, fig2, model
 
 
-if whatToRun == "continueTraining":  # Continue traning of pre-trained model
+elif whatToRun == "continueTraining":  # Continue traning of pre-trained model
 
     modelname = "model_cnn1_1.h5py"
-    modelpath = "selected_models\\" + modelname
-    model = km.load_model(modelpath, custom_objects=None, compile=True)
+    modelpath = Path("selected_models/")
+    model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
 
     # Run training
     model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses=[], trainedModel=model)
@@ -236,21 +239,25 @@ if whatToRun == "continueTraining":  # Continue traning of pre-trained model
     with open(modelname_new[:-5] + ".csv", mode='w') as file:
         result_pd.to_csv(file)
 
-    pdf = PdfPages("results\\" + modelname_new[:-5] + ".pdf")  # Save results to pdf
+    pdfname = modelname_new[:-5] + ".pdf"
+    pdf = PdfPages(path_results / pdfname)  # Save results to pdf
     pdf.savefig(fig1)
     pdf.close()
 
 
-if whatToRun == "singleTesting":  # Run single testing
+elif whatToRun == "singleTesting":  # Run single testing
 
-    modelpath = "model_cnn1_1.h5py"
-    fig2, losses = runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses=[])
+    modelname = "model_cnn1_1.h5py"
+    fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses=[])
 
-    pdf = PdfPages("results\\"+ modelpath[:-5] + ".pdf")  # Save results to pdf
+    pdfname = modelname[:-5] + ".pdf"
+    pdf = PdfPages(path_results / pdfname )  # Save results to pdf
     pdf.savefig(fig2)
     pdf.close()
 
+else: print('Warning: select what to run')
 
-np.savetxt('results\\results.txt', np.array(losses_all), delimiter=',', fmt="%s")
+
+np.savetxt(path_results / "results.txt", np.array(losses_all), delimiter=',', fmt="%s")
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
