@@ -65,8 +65,8 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     res2 = "Validation loss: %.2e" % result.history['val_loss'][-1]
     print(res1)
     print(res2)
-    losses.append(res1)
-    losses.append(res2)
+    losses[2] = res1
+    losses[3] = res2
 
     fig1 = plt.figure(1, figsize=(15, 6))
     ax1 = fig1.add_subplot(121)
@@ -135,8 +135,8 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     res4 = "MAPE: %.2f" % mape
     print(res3)
     print(res4)
-    losses.append(res3)
-    losses.append(res4)
+    losses[4] = res3
+    losses[5] = res4
 
 
     # Plot
@@ -191,11 +191,11 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
     for j in range(0, len(CNNarchitecture)):
         for i in range(1,6):
 
-             losses = []
+             losses = [float("NaN") for x in range(0,11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
              str2 = 'Subcase: ' + str(i)
-             losses.append(str1)
-             losses.append(str2)
+             losses[0] = str1
+             losses[1] = str2
              print("Starting ..." + '\n' + str1 + '\n' + str2)
 
 
@@ -225,16 +225,20 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              del fig1, fig2, model
 
 
-elif whatToRun == "continueTraining":  # Continue traning of pre-trained model
+elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
-    modelname = "model_cnn1_1.h5py"
+    modelname = "model_cnn1_4.h5py"
     modelpath = Path("selected_models/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
 
     # Run training
-    model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses=[], trainedModel=model)
+    losses = [float("NaN") for x in range(0, 11)]
+    model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses=losses, trainedModel=model)
     modelname_new = modelname[:-5] + "_cont" + ".h5py"
-    model.save(modelname[:-5] + "_cont.h5py")
+    model.save(modelname_new)
+
+    # Run testing
+    fig2, losses = runTesting(datapath, modelname_new, imsize_x, imsize_y, scaler, losses=losses)
 
     # Save results
     result_pd = pd.DataFrame(result.history)
@@ -244,13 +248,17 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model
     pdfname = modelname_new[:-5] + ".pdf"
     pdf = PdfPages(path_results / pdfname)  # Save results to pdf
     pdf.savefig(fig1)
+    pdf.savefig(fig2)
     pdf.close()
+
+    losses_all = losses
 
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn1_1.h5py"
-    fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses=[])
+    modelname = "model_cnn1_4.h5py"
+    losses = [float("NaN") for x in range(0, 11)]
+    fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses=losses)
 
     pdfname = modelname[:-5] + ".pdf"
     pdf = PdfPages(path_results / pdfname )  # Save results to pdf
