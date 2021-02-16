@@ -187,9 +187,8 @@ path_results = Path('results/')
 
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
-    losses_all = []
     for j in range(0, len(CNNarchitecture)):
-        for i in range(1,6):
+        for i in range(1,4):
 
              losses = [float("NaN") for x in range(0,11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
@@ -220,7 +219,6 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              pdf.savefig(fig2)
              pdf.close()
 
-             losses_all = losses_all.extend(losses)
 
              del fig1, fig2, model
 
@@ -251,8 +249,6 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
     pdf.savefig(fig2)
     pdf.close()
 
-    losses_all = losses
-
 
 elif whatToRun == "singleTesting":  # Run single testing
 
@@ -268,6 +264,6 @@ elif whatToRun == "singleTesting":  # Run single testing
 else: print('Warning: select what to run')
 
 
-np.savetxt(path_results / "results.txt", np.array(losses_all), delimiter=',', fmt="%s")
+
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
