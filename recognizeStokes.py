@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 
 import keras
 import keras.models as km
+from keras.preprocessing.image import ImageDataGenerator
 
 import pandas as pd
 from pathlib import Path
@@ -18,7 +19,7 @@ import CNNarchitectures as ff1
 start = time.time()
 
 
-def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses, trainedModel=[]):
+def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment,losses, trainedModel=[]):
     '''
     Load training data, split to validation and training and run training and save trained model
     '''
@@ -44,7 +45,8 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
     Train_x = Train_x / 255.
     Valid_x = Valid_x / 255.
 
-    # Create or import your cnn model
+
+    # Define (create) CNN model or load pre-trained
     if trainedModel == []:
         print('Train new model')
         model = ff1.createCNNarchitecture(CNNarchitecture, imsize_x, imsize_y) # Create model and fit
@@ -56,7 +58,15 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
         model.summary()
 
 
-    result = model.fit(Train_x, Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
+    # Train either by default or by using augmentation in Keras
+    if augment == False:
+        print('Train default (no keras data augmentation)')
+        result = model.fit(Train_x, Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
+    else:
+        print('Train with keras data augmentation')
+        datagen = ImageDataGenerator(rotation_range=90)
+        it = datagen.flow(Train_x, Train_y, batch_size = batch_size)
+        result = model.fit_generator(it, validation_data=(Valid_x, Valid_y), steps_per_epoch=np.ceil(len(Train_y)/batch_size), epochs=epochs)
 
 
     # Plot loss and accuracy
@@ -174,7 +184,8 @@ datapath = Path("data/Test2000/Augmented_centered/")    # X and y data  # Test
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
-epochs = 60
+epochs = 3
+augment = True                                          # Keras augmentation
 CNNarchitecture = [1]                                   # [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
@@ -199,7 +210,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 
              # Run training
-             model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, losses=losses)
+             model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
              modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
              model.save(modelname)
 
@@ -231,7 +242,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
     # Run training
     losses = [float("NaN") for x in range(0, 11)]
-    model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, losses=losses, trainedModel=model)
+    model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses, trainedModel=model)
     modelname_new = modelname[:-5] + "_cont" + ".h5py"
     model.save(modelname_new)
 
@@ -254,7 +265,7 @@ elif whatToRun == "singleTesting":  # Run single testing
 
     modelname = "model_cnn1_4.h5py"
     losses = [float("NaN") for x in range(0, 11)]
-    fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses=losses)
+    fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses)
 
     pdfname = modelname[:-5] + ".pdf"
     pdf = PdfPages(path_results / pdfname )  # Save results to pdf
