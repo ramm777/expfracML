@@ -94,33 +94,33 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         x = inputs
 
         x = Conv2D(16, (3, 3), padding="same")(x)
-        x = Activation("selu")(x)
+        x = LeakyReLU()(x)
         x = BatchNormalization(axis=-1)(x)
         x = MaxPooling2D(pool_size=(2, 2))(x)
 
         x = Conv2D(32, (3, 3), padding="same")(x)
-        x = Activation("selu")(x)
+        x = LeakyReLU()(x)
         x = BatchNormalization(axis=-1)(x)
         x = MaxPooling2D(pool_size=(2, 2))(x)
 
         x = Conv2D(64, (3, 3), padding="same")(x)
-        x = Activation("selu")(x)
+        x = LeakyReLU()(x)
         x = BatchNormalization(axis=-1)(x)
         x = MaxPooling2D(pool_size=(2, 2))(x)
 
-        x = Conv2D(64, (3, 3), padding="same")(x)
-        x = Activation("selu")(x)
+        x = Conv2D(32, (3, 3), padding="same")(x)
+        x = LeakyReLU()(x)
         x = BatchNormalization(axis=-1)(x)
         x = MaxPooling2D(pool_size=(2, 2))(x)
 
         x = Flatten()(x)
         x = Dense(16)(x)
-        x = Activation("selu")(x)
+        x = LeakyReLU()(x)
         x = BatchNormalization(axis=-1)(x)
         x = Dropout(0.5)(x)
 
         x = Dense(4)(x)
-        x = Activation("selu")(x)
+        x = LeakyReLU()(x)
         x = Dense(1)(x)
 
         model = km.Model(inputs, x)

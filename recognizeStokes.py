@@ -66,7 +66,7 @@ def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, bat
         print('Train with keras data augmentation')
         datagen = ImageDataGenerator(rotation_range=90)
         it = datagen.flow(Train_x, Train_y, batch_size = batch_size)
-        result = model.fit_generator(it, validation_data=(Valid_x, Valid_y), steps_per_epoch=np.ceil(len(Train_y)/batch_size), epochs=epochs)
+        result = model.fit(it, validation_data=(Valid_x, Valid_y), steps_per_epoch=np.ceil(len(Train_y)/batch_size), epochs=epochs)
 
 
     # Plot loss and accuracy
@@ -177,16 +177,16 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 whatToRun = "runBatches"  # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
-# Inputs train
+# Inputs training
 datapath_y = Path("data/Train/Augmented_centered/")     # Augmented, centered
 datapath_x = Path("data/Train/Augmented_centered/")     # Augmented, centered
 datapath = Path("data/Test2000/Augmented_centered/")    # X and y data  # Test
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
-epochs = 3
+epochs = 60
 augment = True                                          # Keras augmentation
-CNNarchitecture = [1]                                   # [1,4]
+CNNarchitecture = [3]                                   # [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
@@ -199,7 +199,7 @@ path_results = Path('results/')
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
     for j in range(0, len(CNNarchitecture)):
-        for i in range(1,4):
+        for i in range(1,3):
 
              losses = [float("NaN") for x in range(0,11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
