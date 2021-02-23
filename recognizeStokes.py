@@ -186,7 +186,7 @@ imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
-CNNarchitecture = [3]                                   # [1,4]
+CNNarchitecture = [1]                                   # [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
@@ -199,7 +199,7 @@ path_results = Path('results/')
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
     for j in range(0, len(CNNarchitecture)):
-        for i in range(1,3):
+        for i in [1]:
 
              losses = [float("NaN") for x in range(0,11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
@@ -236,7 +236,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
-    modelname = "model_cnn1_4.h5py"
+    modelname = "model_cnn2_11.h5py"
     modelpath = Path("selected_models/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
 
