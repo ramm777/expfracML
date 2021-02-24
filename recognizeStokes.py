@@ -117,7 +117,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
     '''
 
-    test_X = np.load(datapath / "train_X.npy")
+    test_X = np.load(datapath / "test_X.npy")
     print('Running testing... ')
 
 
@@ -185,8 +185,8 @@ imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
-augment = True                                          # Keras augmentation
-CNNarchitecture = [1]                                   # [1,4]
+augment = False                                         # Keras augmentation
+CNNarchitecture = [6]                                   # [1,4]
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
 
