@@ -37,12 +37,17 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
         model = km.Sequential()
 
-        model.add(Conv2D(32, kernel_size=(3, 3), input_shape=(imsize_x, imsize_y, 1), padding='same'))
+        model.add(Conv2D(32, kernel_size=(9, 9), input_shape=(imsize_x, imsize_y, 1), padding='same'))
         model.add(Activation('selu')) # 'relu', 'elu'
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
 
-        model.add(Conv2D(64, kernel_size=(3, 3), input_shape=(imsize_x, imsize_y, 1), padding='same'))
+        model.add(Conv2D(64, kernel_size=(7, 7), input_shape=(imsize_x, imsize_y, 1), padding='same'))
+        model.add(Activation('selu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
+
+        model.add(Conv2D(128, kernel_size=(5, 5), input_shape=(imsize_x, imsize_y, 1), padding='same'))
         model.add(Activation('selu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
@@ -57,14 +62,10 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
 
-        model.add(Conv2D(32, kernel_size=(3, 3), input_shape=(imsize_x, imsize_y, 1), padding='same'))
-        model.add(Activation('selu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
-
         model.add(Flatten())
-        model.add(Dense(16))
+        model.add(Dense(32))
         model.add(Dense(1))
+
 
     # -----------------------------------------------------------------------------------------------------------------------
 
