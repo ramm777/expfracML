@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') # For the saving purposes. To revert use matplotlib.use('TkAgg')
 from matplotlib.backends.backend_pdf import PdfPages
 from sklearn.model_selection import train_test_split
 
@@ -174,7 +174,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 # Inputs for training
 
 
-whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
+whatToRun = "singleTesting" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
 # Inputs training
@@ -185,12 +185,14 @@ imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
-augment = False                                         # Keras augmentation
-CNNarchitecture = [6]                                   # [1,4]
+augment = True                                          # Keras augmentation
+CNNarchitecture = [6]                                   # [1,4, ...]
+subcases = [12]                                         # [1,2,3...]
+
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
-
 path_results = Path('results/')
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Run and save results
@@ -199,7 +201,7 @@ path_results = Path('results/')
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
     for j in range(0, len(CNNarchitecture)):
-        for i in [11]:
+        for i in subcases:
 
              losses = [float("NaN") for x in range(0,11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
@@ -263,7 +265,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn6_1.h5py"
+    modelname = "model_cnn6_3.h5py"
     losses = [float("NaN") for x in range(0, 11)]
     fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses)
 
@@ -274,6 +276,9 @@ elif whatToRun == "singleTesting":  # Run single testing
 
 else: print('Warning: select what to run')
 
+
+# Load and plot training results CSV file
+# ff.loadPlotCSV('result_cnn6_3.csv')
 
 
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)

@@ -9,6 +9,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import LeakyReLU
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 
@@ -132,3 +133,36 @@ def dataAugmentation(train_X, train_Y):
     train_Y = np.concatenate((train_Y, train_Y1, train_Y1, train_Y1))
 
     return train_X, train_Y
+
+
+def loadPlotCSV(filename):
+
+    '''
+    Function to load and plot CSV results of your training of aq machine learning model
+    '''
+
+    data = pd.read_csv(filename)
+    epochs = range(0, len(data['loss']))
+
+    fig1 = plt.figure(1, figsize=(15, 6))
+    ax1 = fig1.add_subplot(121)
+    ax2 = fig1.add_subplot(122)
+    ax1.plot(epochs, data['loss'], 'bo', label='Training loss')
+    ax1.plot(epochs, data['val_loss'], 'b', label='Validation loss')
+    ax1.set_yscale('log')
+    ax1.title.set_text('Semi-log plot')
+    ax1.legend()
+    ax1.set_ylabel("Loss")
+    ax1.set_xlabel("Epochs")
+    # ax2.plot(epochs, result.history['loss'], 'bo', label='Training loss')
+    # ax2.plot(epochs, result.history['val_loss'], 'b', label='Validation loss')
+    # ax2.title.set_text('Linear plot')
+    # ax2.legend()
+    # ax2.set_ylabel("Loss")
+    # ax2.set_xlabel("Epochs")
+    fig1.text(0.6, 0.52, 'Results training: ')
+    fig1.text(0.6, 0.5, str(filename))
+    fig1.text(0.6, 0.48, "Train loss: %.2e" % data['loss'].iloc[-1])
+    fig1.text(0.6, 0.46, "Validation loss: %.2e" % data['val_loss'].iloc[-1])
+    plt.show()
+    #plt.close()
