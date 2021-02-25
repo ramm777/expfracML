@@ -1,5 +1,24 @@
 import numpy as np
+from pathlib import Path
+import matplotlib.pyplot as plt
+
 import utils as ff
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Modify existing images to remove velocity field, substituting it with a single non zero value
+
+
+datapath_x = Path("data/Train/Augmented_centered/")     # Augmented, centered
+dataname = "train_X.npy"
+
+data = np.load(datapath_x / dataname)
+
+new_data = data.copy()
+new_data[new_data > 0] = 255
+
+np.save('train_X_bold.npy', new_data)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Data engineering

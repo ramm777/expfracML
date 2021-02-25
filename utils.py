@@ -50,7 +50,7 @@ def loadPreprocessImages(datapath_x, imnum, coarse_imsize_x, coarse_imsize_y):
         #image_grey.show() # plot processed image
 
         if i == 1:
-            allimages = image_ndarray
+            allimages = image_ndarray.copy()
         else:
             allimages = np.dstack((allimages, image_ndarray))
 
@@ -109,10 +109,10 @@ def runCenteringAndPlot(train_X, plot=True):
         new_images = train_X*0
         for i in range(0, train_X.shape[0]):
 
-            one_image = train_X[i, :, :]
+            one_image = train_X[i, :, :].copy()
             one_image1 = centreMatrixNonzeros(one_image)
 
-            new_images[i, :, :] = one_image1
+            new_images[i, :, :] = one_image1.copy()
             print('i: %s' % i)
             del one_image, one_image1
 
@@ -125,11 +125,11 @@ def dataAugmentation(train_X, train_Y):
     '''
 
     A = np.swapaxes(train_X, 1, 2)
-    B = train_X[: ,: ,::-1]
-    C = A[: ,: ,::-1]
+    B = train_X[: ,: ,::-1].copy()
+    C = A[: ,: ,::-1].copy()
     train_X = np.vstack((train_X, A, B, C))
 
-    train_Y1 = train_Y
+    train_Y1 = train_Y.copy()
     train_Y = np.concatenate((train_Y, train_Y1, train_Y1, train_Y1))
 
     return train_X, train_Y

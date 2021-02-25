@@ -232,7 +232,6 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              pdf.savefig(fig2)
              pdf.close()
 
-
              del fig1, fig2, model
 
 

@@ -1,5 +1,9 @@
 import numpy as np
-import logging
+from pathlib import Path
+import matplotlib.pyplot as plt
+
+
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -96,6 +100,8 @@ print(a)
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Logging - didn't fully understand how to use it.
+
+import logging
 
 logging.basicConfig(filename="logfilename.log", level=logging.INFO)
 logging.info('your text goes here')
