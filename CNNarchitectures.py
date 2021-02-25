@@ -367,7 +367,9 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
             # output layer
             X = Flatten()(X)
+            X = Dense(32)(X) # Aman added
             X = Dense(classes, name='fc' + str(classes), kernel_initializer=glorot_uniform(seed=0))(X)
+
 
             # Create model
             model = Model(inputs=X_input, outputs=X, name='ResNet50')

@@ -174,7 +174,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 # Inputs for training
 
 
-whatToRun = "runBatches"  # Select from: "continueTraining", "singleTesting", "runBatches"
+whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
 # Inputs training
@@ -199,7 +199,7 @@ path_results = Path('results/')
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
     for j in range(0, len(CNNarchitecture)):
-        for i in [1]:
+        for i in [11]:
 
              losses = [float("NaN") for x in range(0,11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
@@ -263,7 +263,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn1_4.h5py"
+    modelname = "model_cnn6_1.h5py"
     losses = [float("NaN") for x in range(0, 11)]
     fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses)
 
