@@ -117,7 +117,7 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
     '''
 
-    test_X = np.load(datapath / "test_X.npy")
+    test_X = np.load(datapath / "test_X.npy" )
     print('Running testing... ')
 
 
@@ -174,20 +174,20 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 # Inputs for training
 
 
-whatToRun = "singleTesting" # Select from: "continueTraining", "singleTesting", "runBatches"
+whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
 # Inputs training
-datapath_y = Path("data/Train/Augmented_centered/")     # Augmented, centered
-datapath_x = Path("data/Train/Augmented_centered/")     # Augmented, centered
-datapath = Path("data/Test2000/Augmented_centered/")    # X and y data  # Test
+datapath_y = Path("data/Train/Augmented_centered/Bald") # Augmented, centered
+datapath_x = Path("data/Train/Augmented_centered/Bald") # Augmented, centered
+datapath = Path("data/Test2000/Augmented_centered/Bald")# X and y data  # Test
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
 CNNarchitecture = [6]                                   # [1,4, ...]
-subcases = [12]                                         # [1,2,3...]
+subcases = [16]                                         # [1,2,3...]
 
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
@@ -264,7 +264,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn6_3.h5py"
+    modelname = "model_cnn2_12.h5py"
     losses = [float("NaN") for x in range(0, 11)]
     fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses)
 
@@ -277,7 +277,7 @@ else: print('Warning: select what to run')
 
 
 # Load and plot training results CSV file
-# ff.loadPlotCSV('result_cnn6_3.csv')
+#ff.loadPlotCSV('result_cnn2_12.csv')
 
 
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)

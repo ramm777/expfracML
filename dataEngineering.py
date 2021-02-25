@@ -9,15 +9,16 @@ import utils as ff
 # Modify existing images to remove velocity field, substituting it with a single non zero value
 
 
-datapath_x = Path("data/Train/Augmented_centered/")     # Augmented, centered
-dataname = "train_X.npy"
+datapath_x = Path("data\Test2000\Augmented_centered")     # Augmented, centered
+dataname = "test_X.npy"
 
 data = np.load(datapath_x / dataname)
 
 new_data = data.copy()
 new_data[new_data > 0] = 255
 
-np.save('train_X_bold.npy', new_data)
+np.save('test_X_bald.npy', new_data)
+print('Filename test_X_bald.npy is later renamed')
 
 
 #-----------------------------------------------------------------------------------------------------------------------
