@@ -1,22 +1,41 @@
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Filename identification linux/windos
 
-import os
-from pathlib import Path
 
-# Might have been a useful name
-a = Path(__file__).stem
-b = Path(__file__).name
+def visualizeModelSchamatically(no, imsize_x, imsize_y):
+    '''
+    Create a graph plot of your deep learning model. Works on linux only.
+    '''
 
-# Another rway
-c = os.path.realpath(__file__)
+    import CNNarchitectures as ff1
+    from keras.utils.vis_utils import plot_model
 
-print(str(a))
-print(str(b))
-print(str(c))
-print("Warning: this doesn't work on Linux for some reason")
+    model = ff1.createCNNarchitecture(no, imsize_x, imsize_y)
+    plot_model(model, to_file='model_schematics.png', show_shapes=True, show_layer_names=True)
+
+    print("Warning: this doesn't work on Windows, works on Linux only")
+    print("Warning: for windows see this fix: https://stackoverflow.com/questions/47605558/importerror-failed-to-import-pydot-you-must-install-pydot-and-graphviz-for-py")
+
+
+def identifyFilename():
+    '''
+    Funciton to identify a current filename identification windows
+    '''
+
+    import os
+    from pathlib import Path
+
+    # Might have been a useful name
+    a = Path(__file__).stem
+    b = Path(__file__).name
+
+    # Another rway
+    c = os.path.realpath(__file__)
+
+    print(str(a))
+    print(str(b))
+    print(str(c))
+    print("Warning: this doesn't work on Linux for some reason")
 
 
 

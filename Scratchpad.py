@@ -19,33 +19,6 @@ from matplotlib import pyplot
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Load and concatinate permf arrays
-import numpy as np
-import scipy.io as sio
-
-
-#permf1 = sio.loadmat("D:\\mrst-2017a\\modules\\vemmech\RESULTS\\ML\\createManyGstokes16000\\permf\\permf1.mat")['permf']
-#permf2 = sio.loadmat("D:\\mrst-2017a\\modules\\vemmech\RESULTS\\ML\\createManyGstokes16000\\permf\\permf2.mat")['permf']
-#permf3 = sio.loadmat("D:\\mrst-2017a\\modules\\vemmech\RESULTS\\ML\\createManyGstokes16000\\permf\\permf3.mat")['permf']
-#permf4 = sio.loadmat("D:\\mrst-2017a\\modules\\vemmech\RESULTS\\ML\\createManyGstokes16000\\permf\\permf4.mat")['permf']
-#permf5 = sio.loadmat("D:\\mrst-2017a\\modules\\vemmech\RESULTS\\ML\\createManyGstokes16000\\permf\\permf5.mat")['permf']
-
-
-#permf1_1 = permf1[0, :]
-#permf2_1 = permf2[0, 3200:]
-#permf3_1 = permf3[0, 6400:]
-#permf4_1 = permf4[0, 9600:]
-#permf5_1 = permf5[0, 12800:]
-
-#del permf1, permf2, permf3, permf4, permf5
-
-#permf = np.hstack((permf1_1, permf2_1, permf3_1, permf4_1, permf5_1))
-
-
-#np.savetxt("D:\\mrst-2017a\\modules\\vemmech\RESULTS\\ML\\createManyGstokes16000\\permf\\permf.csv", permf, delimiter=',')
-
-
-#-----------------------------------------------------------------------------------------------------------------------
 # How to plot matrix easily
 
 # plt.imshow(your_matrix)

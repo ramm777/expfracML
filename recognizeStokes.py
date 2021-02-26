@@ -186,8 +186,8 @@ imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
-CNNarchitecture = [6]                                   # [1,4, ...]
-subcases = [16]                                         # [1,2,3...]
+CNNarchitecture = [2]                                   # [1,4, ...]
+subcases = [13]                                         # [1,2,3...]
 
 
 scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
@@ -264,7 +264,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn2_12.h5py"
+    modelname = "model_cnn2_5.h5py"
     losses = [float("NaN") for x in range(0, 11)]
     fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses)
 

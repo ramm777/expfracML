@@ -16,13 +16,13 @@ import pydot
 from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
 from keras.utils import plot_model
-#from resnets_utils import *
+# from resnets_utils import *
 from keras.initializers import glorot_uniform
 import scipy.misc
 from matplotlib.pyplot import imshow
 
-
 import keras.backend as K
+
 K.set_image_data_format('channels_last')
 K.set_learning_phase(1)
 
