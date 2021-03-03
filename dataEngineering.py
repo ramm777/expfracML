@@ -48,15 +48,21 @@ def makeBaldFractures(datapath_x, dataname):
 
 # Run data processing, augmentation and centering
 imnum2 = 75110
-datapath_y = Path("D:\\expfracML\\data\\TrainTest75000\\permf\\permf.csv")     # Augmented
-datapath_x = Path("D:\\expfracML\\data\\TrainTest75000\\")
-train_Y = np.loadtxt(datapath_y)
+datapath_x = Path("D:\\expfracML\\data\\TrainTest75110\\")
 
 train_X = ff.loadPreprocessImages(datapath_x, imnum2, 128, 128)
-train_X, train_Y = ff.dataAugmentation(train_X, train_Y)
-new_images = ff.runCenteringAndPlot(train_X, plot=False)
-np.save('train_X.npy', new_images)
-np.savetxt("train_Y.csv", train_Y, delimiter=',')
+np.save('train_X.npy', train_X)
+print('Finished loading and processing data')
+
+
+#datapath_y = Path("D:\\expfracML\\data\\TrainTest75110\\permf\\permf.csv")     # Augmented
+#train_Y = np.loadtxt(datapath_y)
+
+
+#train_X, train_Y = ff.dataAugmentation(train_X, train_Y)
+#new_images = ff.runCenteringAndPlot(train_X, plot=False)
+#np.save('train_X.npy', new_images)
+#np.savetxt("train_Y.csv", train_Y, delimiter=',')
 
 
 #-----------------------------------------------------------------------------------------------------------------------

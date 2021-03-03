@@ -1,3 +1,18 @@
+# These imports is for linux to avoid multi-threading
+from sys import platform
+if platform == "linux":
+    import os
+    os.environ["NUMEXPR_MAX_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ['OMP_NUM_THREADS'] = "1"
+    os.environ['BLIS_NUM_THREADS'] = "1"
+    os.environ['VECLIB_MAXIMUM_THREADS'] = "1"
+    os.environ['NUMBA_NUM_THREADS'] = "1"
+    os.environ['NUMEXPR_NUM_THREADS'] = "1"
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -19,17 +34,17 @@ import CNNarchitectures as ff1
 start = time.time()
 
 
-def runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment,losses, trainedModel=[]):
+def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment,losses, trainedModel=[]):
     '''
     Load training data, split to validation and training and run training and save trained model
     '''
 
     #train_X = ff.loadPreprocessImages(datapath, imnum, coarse_imsize_x, coarse_imsize_y)
-    train_X = np.load(datapath_x / "train_X.npy")
+    train_X = np.load(datapath / "train_X.npy")
     train_X = train_X.astype('float32')
 
 
-    train_Y = np.loadtxt(datapath_y / "permf.csv")
+    train_Y = np.loadtxt(datapath / "permf.csv")
     train_Y = train_Y / 1e4  # convert to 'mD/1e4'
     train_Y = train_Y.reshape(-1, 1)
     train_Y_scaled = scaler.transform(train_Y)
@@ -178,19 +193,19 @@ whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "ru
 
 
 # Inputs training
-datapath_y = Path("data/Train/Augmented_centered/Bald") # Augmented, centered
-datapath_x = Path("data/Train/Augmented_centered/Bald") # Augmented, centered
-datapath = Path("data/Test2000/Augmented_centered/Bald")# X and y data  # Test
+path_train = Path("data/TrainTest75110_processed/Train/Augmented_centered") # Train X and y data
+path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Test X and y data
+path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
 imsize_x = 128
 imsize_y = 128
-batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
+batch_size = 1                                          # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
 CNNarchitecture = [2]                                   # [1,4, ...]
-subcases = [13]                                         # [1,2,3...]
+subcases = [20]                                         # [1,2,3...]
 
 
-scaler = ff.getScaler(datapath_y)  # Scale from 0 to 1
+scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
 path_results = Path('results/')
 
 
@@ -212,7 +227,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 
              # Run training
-             model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
+             model, result, fig1, losses = runTraining(path_train, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
              modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
              model.save(modelname)
 
@@ -223,7 +238,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
              # Run testing
              modelpath = modelname
-             fig2, losses = runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses)
+             fig2, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
 
              # Save plots to pdf
              pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
@@ -243,12 +258,12 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
     # Run training
     losses = [float("NaN") for x in range(0, 11)]
-    model, result, fig1, losses = runTraining(datapath_y, datapath_x, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses, trainedModel=model)
+    model, result, fig1, losses = runTraining(path_train, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses, trainedModel=model)
     modelname_new = modelname[:-5] + "_cont" + ".h5py"
     model.save(modelname_new)
 
     # Run testing
-    fig2, losses = runTesting(datapath, modelname_new, imsize_x, imsize_y, scaler, losses=losses)
+    fig2, losses = runTesting(path_test, modelname_new, imsize_x, imsize_y, scaler, losses=losses)
 
     # Save results
     result_pd = pd.DataFrame(result.history)
@@ -266,7 +281,7 @@ elif whatToRun == "singleTesting":  # Run single testing
 
     modelname = "model_cnn2_5.h5py"
     losses = [float("NaN") for x in range(0, 11)]
-    fig2, losses = runTesting(datapath, modelname, imsize_x, imsize_y, scaler, losses)
+    fig2, losses = runTesting(path_test, modelname, imsize_x, imsize_y, scaler, losses)
 
     pdfname = modelname[:-5] + ".pdf"
     pdf = PdfPages(path_results / pdfname )  # Save results to pdf

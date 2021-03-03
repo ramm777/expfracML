@@ -1,5 +1,9 @@
 
 
+from sys import platform
+if platform == "linux":
+    print('Works fine on linux')
+
 
 
 def visualizeModelSchamatically(no, imsize_x, imsize_y):
