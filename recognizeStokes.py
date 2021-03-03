@@ -198,11 +198,11 @@ path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Te
 path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
 imsize_x = 128
 imsize_y = 128
-batch_size = 1                                          # Number of training examples utilized in one iteration, larger is better
+batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
-CNNarchitecture = [2]                                   # [1,4, ...]
-subcases = [20]                                         # [1,2,3...]
+CNNarchitecture = [6]                                   # [1,4, ...]
+subcases = [21]                                         # [1,2,3...]
 
 
 scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
