@@ -192,17 +192,24 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
-# Inputs training
-path_train = Path("data/TrainTest75110_processed/Train/Augmented_centered") # Train X and y data
-path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Test X and y data
-path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
+# Inputs 65000+10110 train/valid/test images (+augmentation)
+#path_train = Path("data/TrainTest75110_processed/Train/Augmented_centered") # Train X and y data
+#path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Test X and y data
+#path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
+
+# Inputs 16000+2000 train/valid/test images (+augmentation)
+path_train = Path("data/Train/Augmented_centered/Bald")   # Train X and y data
+path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
+path_traintest = path_train
+
+
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
-CNNarchitecture = [6]                                   # [1,4, ...]
-subcases = [21]                                         # [1,2,3...]
+CNNarchitecture = [1]                                   # [1,4, ...]
+subcases = [11]                                          # [1,2,3...]
 
 
 scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
@@ -252,7 +259,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
-    modelname = "model_cnn2_11.h5py"
+    modelname = "model_cnn6_4.h5py"
     modelpath = Path("selected_models/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
 
@@ -279,7 +286,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn2_5.h5py"
+    modelname = "model_cnn4_2.h5py"
     losses = [float("NaN") for x in range(0, 11)]
     fig2, losses = runTesting(path_test, modelname, imsize_x, imsize_y, scaler, losses)
 
@@ -292,7 +299,7 @@ else: print('Warning: select what to run')
 
 
 # Load and plot training results CSV file
-#ff.loadPlotCSV('result_cnn2_12.csv')
+#ff.loadPlotCSV('result_cnn4_1.csv')
 
 
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)

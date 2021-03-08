@@ -64,6 +64,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
         model.add(Flatten())
         model.add(Dense(32))
+        model.add(Dense(16, activation='linear'))
         model.add(Dense(1))
 
 
