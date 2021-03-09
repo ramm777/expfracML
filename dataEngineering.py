@@ -4,6 +4,30 @@ import matplotlib.pyplot as plt
 import scipy.io as sio
 
 import utils as ff
+import functions1 as ff1
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Scripts to create good data for ML 300 imagfes stress-permf
+
+caseID = 20
+
+datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/ML/")
+modelpath = datapath / ('case' + str(caseID) + '/' + 'case' + str(caseID) + '.mat')
+stress = sio.loadmat(modelpath)['mstresshistbc']
+permf = sio.loadmat(modelpath)['permf']
+
+stress = np.reshape(stress, (stress.size, ))
+permf = np.reshape(permf, (permf.size, ))
+
+stress1 = ff1.coarsenArrayLog2(stress, 30, exp=10)
+permf1 = ff1.coarsenArrayLog2(permf, 30, exp=10)
+
+
+plt.plot(stress, permf)
+plt.plot(stress1, permf1, 'rx')
+plt.ylabel('Permf, mD')
+plt.xlabel('Stress, Pa')
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -47,12 +71,12 @@ def makeBaldFractures(datapath_x, dataname):
 
 
 # Run data processing, augmentation and centering
-imnum2 = 75110
-datapath_x = Path("D:\\expfracML\\data\\TrainTest75110\\")
+#imnum2 = 75110
+#datapath_x = Path("D:\\expfracML\\data\\TrainTest75110\\")
 
-train_X = ff.loadPreprocessImages(datapath_x, imnum2, 128, 128)
-np.save('train_X.npy', train_X)
-print('Finished loading and processing data')
+#train_X = ff.loadPreprocessImages(datapath_x, imnum2, 128, 128)
+#np.save('train_X.npy', train_X)
+#print('Finished loading and processing data')
 
 
 #datapath_y = Path("D:\\expfracML\\data\\TrainTest75110\\permf\\permf.csv")     # Augmented
