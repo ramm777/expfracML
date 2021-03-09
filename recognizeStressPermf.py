@@ -1,6 +1,6 @@
 # These imports is for linux to avoid multi-threading
 from sys import platform
-if platform == "linux":
+if platform == "linux" or platform == "linux2":
     import os
     os.environ["NUMEXPR_MAX_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
@@ -12,6 +12,7 @@ if platform == "linux":
     os.environ['NUMBA_NUM_THREADS'] = "1"
     os.environ['NUMEXPR_NUM_THREADS'] = "1"
 
+print("Current platform: " + platform)
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -73,15 +74,9 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
         model.summary()
 
 
-    # Train either by default or by using augmentation in Keras
-    if augment == False:
-        print('Train default (no keras data augmentation)')
-        result = model.fit(Train_x, Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
-    else:
-        print('Train with keras data augmentation')
-        datagen = ImageDataGenerator(rotation_range=90)
-        it = datagen.flow(Train_x, Train_y, batch_size = batch_size)
-        result = model.fit(it, validation_data=(Valid_x, Valid_y), steps_per_epoch=np.ceil(len(Train_y)/batch_size), epochs=epochs)
+    # Train_s => train stress, Valid_s => validation stress
+    print('Train default (no keras data augmentation)')
+    result = model.fit(x=[Train_x, Train_s], y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=([Valid_x, Valid_s], Valid_y))
 
 
     # Plot loss and accuracy
@@ -208,8 +203,8 @@ imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = True                                          # Keras augmentation
-CNNarchitecture = [1]                                   # [1,4, ...]
-subcases = [11]                                          # [1,2,3...]
+CNNarchitecture = [7]                                   # [1,4, ...]
+subcases = [1]                                          # [1,2,3...]
 
 
 scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
