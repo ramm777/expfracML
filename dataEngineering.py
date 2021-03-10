@@ -19,13 +19,15 @@ def collectStressPermf():
     Not fully generatized function, but more hard-coded
     """
 
-    stress_all = [np.nan for x in range(300)]
-    permf_all = [np.nan for y in range(300)]
+    casesum = 250
 
-    for caseID in range(1, 301):
+    stress_all = [np.nan for x in range(casesum)]
+    permf_all = [np.nan for y in range(casesum)]
 
-        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/ML/")
-        modelpath = datapath / ('case' + str(caseID) + '/' + 'case' + str(caseID) + '.mat')
+    for caseID in range(1, casesum+1):
+
+        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5full/")
+        modelpath = datapath / ('case5_' + str(caseID) + '/' + 'case5_' + str(caseID) + '.mat')
 
         try:
             stress = sio.loadmat(modelpath)['mstresshistbc']
