@@ -2,32 +2,87 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
 import scipy.io as sio
+import pandas as pd
 
 import utils as ff
 import functions1 as ff1
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Scripts to create good data for ML 300 imagfes stress-permf
-
-caseID = 20
-
-datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/ML/")
-modelpath = datapath / ('case' + str(caseID) + '/' + 'case' + str(caseID) + '.mat')
-stress = sio.loadmat(modelpath)['mstresshistbc']
-permf = sio.loadmat(modelpath)['permf']
-
-stress = np.reshape(stress, (stress.size, ))
-permf = np.reshape(permf, (permf.size, ))
-
-stress1 = ff1.coarsenArrayLog2(stress, 30, exp=10)
-permf1 = ff1.coarsenArrayLog2(permf, 30, exp=10)
+# Scripts to collect data for ML 300 imagfes stress-permf
 
 
-plt.plot(stress, permf)
-plt.plot(stress1, permf1, 'rx')
-plt.ylabel('Permf, mD')
-plt.xlabel('Stress, Pa')
+
+def collectStressPermf():
+    """
+    Collect stress and permf data from 300 simulations. Notice: clean of NaNs is done manually.
+    Not fully generatized function, but more hard-coded
+    """
+
+    stress_all = [np.nan for x in range(300)]
+    permf_all = [np.nan for y in range(300)]
+
+    for caseID in range(1, 301):
+
+        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/ML/")
+        modelpath = datapath / ('case' + str(caseID) + '/' + 'case' + str(caseID) + '.mat')
+
+        try:
+            stress = sio.loadmat(modelpath)['mstresshistbc']
+            permf = sio.loadmat(modelpath)['permf']
+        except:
+            print("No data for the case: " + str(caseID))
+            print("Continue without this case")
+            continue
+
+        stress = np.reshape(stress, (stress.size, ))
+        permf = np.reshape(permf, (permf.size, ))
+
+        stress_all[caseID-1] = stress
+        permf_all[caseID-1] = permf
+
+        print("WARNING: Cleaned NaNs manually, but this function saves unclened data")
+        print("WARNING: perform cleaning of NaNs")
+
+        np.save('stress.npy', stress_all)
+        np.save('permf.npy', permf_all)
+
+
+def loadSaveCSV():
+    """
+        These are scripts and not a ready funciton to load .npy, perfomr padding using NaNs and save as csv for Matlab
+    """
+
+    # Load
+    permf = np.load("D:\expfracML\data\TrainTest289\permf.npy", allow_pickle=True)
+    stress = np.load("D:\expfracML\data\TrainTest289\stress.npy", allow_pickle=True)
+
+
+    # Convert object ndarray (rows are not equal in size) to dictionary (rows are not equal in size)
+    permf1 = dict(enumerate(permf.flatten(), 1))
+    stress1 = dict(enumerate(stress.flatten(), 1))
+
+    # Padding empty entries in the dictionary with NaNs, to make dictionary rows equal dimensions
+    permf2 = pd.DataFrame.from_dict(permf1, orient='index')
+    stress2 = pd.DataFrame.from_dict(stress1, orient='index')
+
+    # Save .csv using pandas
+    pd.DataFrame(permf2).to_csv("output.csv", index=False)
+    pd.DataFrame(stress2).to_csv("output.csv", index=False)
+
+
+
+# Coarsen curves of stress-perm
+#stress1 = ff1.coarsenArrayLog2(stress, 30, exp=10)
+#permf1 = ff1.coarsenArrayLog2(permf, 30, exp=10)
+
+
+
+# How to create np.array of NaNs
+#stress_all = np.empty(300)
+#permf_all = np.empty(300)
+#stress_all[:] = np.nan
+#permf_all[:] = np.nan
 
 
 #-----------------------------------------------------------------------------------------------------------------------
