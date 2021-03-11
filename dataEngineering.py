@@ -12,11 +12,33 @@ import functions1 as ff1
 # Scripts to collect data for ML 300 imagfes stress-permf
 
 
+def loadmatCoarsen():
+
+    permf = sio.loadmat("data\\TrainTest247\\rpermf.mat")['rpermf_all']
+    stress= sio.loadmat("data\\TrainTest247\\rstress.mat")['rstress_all']
+
+    # Coarsen curves of stress-perm
+    permf1 = ff1.coarsenArrayLog2(permf.transpose(), 30, exp=10)
+    stress1 = ff1.coarsenArrayLog2(stress.transpose(), 30, exp=10)
+    permf1 = permf1.transpose()
+    stress1 = stress1.transpose()
+
+    permf2 = permf1.flatten()
+    stress2 = stress1.flatten()
+
+    # round elements
+    permf2 = np.rint(permf2)
+    stress2 = np.rint(stress2)
+
+    np.savetxt('permf.csv', permf2, delimiter=',')
+    np.savetxt('stress.csv', stress2, delimiter=',')
+
+
 
 def collectStressPermf():
     """
-    Collect stress and permf data from 300 simulations. Notice: clean of NaNs is done manually.
-    Not fully generatized function, but more hard-coded
+    Collect stress and permf data from raw 300 simulations results. Notice: clean of NaNs is done manually.
+    Not fully generatized function, need to clean failed subcases manually
     """
 
     casesum = 250
@@ -50,14 +72,15 @@ def collectStressPermf():
         np.save('permf.npy', permf_all)
 
 
+
 def loadSaveCSV():
     """
-        These are scripts and not a ready funciton to load .npy, perfomr padding using NaNs and save as csv for Matlab
+        These are scripts and not a ready funciton to load .npy, perform padding using NaNs and save as csv for Matlab
     """
 
     # Load
-    permf = np.load("D:\expfracML\data\TrainTest289\permf.npy", allow_pickle=True)
-    stress = np.load("D:\expfracML\data\TrainTest289\stress.npy", allow_pickle=True)
+    permf = np.load("permf.npy", allow_pickle=True)
+    stress = np.load("stress.npy", allow_pickle=True)
 
 
     # Convert object ndarray (rows are not equal in size) to dictionary (rows are not equal in size)
@@ -69,14 +92,8 @@ def loadSaveCSV():
     stress2 = pd.DataFrame.from_dict(stress1, orient='index')
 
     # Save .csv using pandas
-    pd.DataFrame(permf2).to_csv("output.csv", index=False)
-    pd.DataFrame(stress2).to_csv("output.csv", index=False)
-
-
-
-# Coarsen curves of stress-perm
-#stress1 = ff1.coarsenArrayLog2(stress, 30, exp=10)
-#permf1 = ff1.coarsenArrayLog2(permf, 30, exp=10)
+    pd.DataFrame(permf2).to_csv("permf.csv", index=False)
+    pd.DataFrame(stress2).to_csv("stress.csv", index=False)
 
 
 
