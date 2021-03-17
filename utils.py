@@ -42,8 +42,16 @@ def loadPreprocessImages(datapath_x, imnum, coarse_imsize_x, coarse_imsize_y):
     '''
 
     for i in range(1, imnum + 1):
+
         image_path = datapath_x / (str(i) +".jpg")
-        image = Image.open(image_path)
+
+        try:
+            image = Image.open(image_path)
+        except:
+            print("Image cannot be open, i: %s" %i)
+            input("Press Enter to continue")
+            continue
+
         image_resized = image.resize((coarse_imsize_x, coarse_imsize_y))
         image_grey = image_resized.convert('L')
         image_ndarray = np.asarray(image_grey)

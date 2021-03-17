@@ -9,7 +9,32 @@ import functions1 as ff1
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Scripts to collect data for ML 300 imagfes stress-permf
+# Scripts to collect data for ML 289 / 247 images stress-permf
+
+
+def prepare247Images():
+
+    imnum2 = 250
+    datapath_x = Path("D:\\expfracML\\data\\TrainTest247_raw\\")
+    train_X = ff.loadPreprocessImages(datapath_x, imnum2, 128, 128)
+
+    # Enlarge images to 247*30 each = 7410
+    for i in range(train_X.shape[0]):
+
+        image = train_X[i].copy()
+        duplicated = np.resize(image, (30, 128, 128))
+
+        if i == 0:
+            new_train_X = duplicated.copy()
+        else:
+            new_train_X = np.vstack((new_train_X, duplicated))
+
+        del image, duplicated
+
+    np.save('test_X.npy', new_train_X )
+    print('Finsihed creating 7410 dataset of images')
+
+
 
 
 def loadmatCoarsen():
@@ -41,12 +66,12 @@ def collectStressPermf():
     Not fully generatized function, need to clean failed subcases manually
     """
 
-    casesum = 250
+    casesnum = 250
 
-    stress_all = [np.nan for x in range(casesum)]
-    permf_all = [np.nan for y in range(casesum)]
+    stress_all = [np.nan for x in range(casesnum)]
+    permf_all = [np.nan for y in range(casesnum)]
 
-    for caseID in range(1, casesum+1):
+    for caseID in range(1, casesnum+1):
 
         datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5full/")
         modelpath = datapath / ('case5_' + str(caseID) + '/' + 'case5_' + str(caseID) + '.mat')
@@ -145,15 +170,16 @@ def makeBaldFractures(datapath_x, dataname):
 
 
 # Run data processing, augmentation and centering
-#imnum2 = 75110
-#datapath_x = Path("D:\\expfracML\\data\\TrainTest75110\\")
+#imnum2 = 250
+#datapath_x = Path("D:\\expfracML\\data\\TrainTest247_raw\\")
+
 
 #train_X = ff.loadPreprocessImages(datapath_x, imnum2, 128, 128)
 #np.save('train_X.npy', train_X)
 #print('Finished loading and processing data')
 
 
-#datapath_y = Path("D:\\expfracML\\data\\TrainTest75110\\permf\\permf.csv")     # Augmented
+#datapath_y = Path("D:\\expfracML\\data\\TrainTest247_processed\\Augmented_centered\\permf.csv")     # Augmented
 #train_Y = np.loadtxt(datapath_y)
 
 

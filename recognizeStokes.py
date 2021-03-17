@@ -193,14 +193,14 @@ whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "ru
 
 
 # Inputs 65000+10110 train/valid/test images (+augmentation)
-path_train = Path("data/TrainTest75110_processed/Train/Augmented_centered") # Train X and y data
-path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Test X and y data
-path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
+#path_train = Path("data/TrainTest75110_processed/Train/Augmented_centered") # Train X and y data
+#path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Test X and y data
+#path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
 
 # Inputs 16000+2000 train/valid/test images (+augmentation)
-#path_train = Path("data/Train/Augmented_centered/Bald")   # Train X and y data
-#path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
-#path_traintest = path_train
+path_train = Path("data/Train/Augmented_centered/")   # Train X and y data
+path_test = Path("data/Test2000/Augmented_centered/") # Test X and y data
+path_traintest = path_train
 
 
 imsize_x = 128
@@ -209,7 +209,7 @@ batch_size = 16                                         # Number of training exa
 epochs = 60
 augment = True                                          # Keras augmentation
 CNNarchitecture = [5]                                   # [1,4, ...]
-subcases = [4,5,6]                                          # [1,2,3...]
+subcases = [7]                                          # [1,2,3...]
 
 
 scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1

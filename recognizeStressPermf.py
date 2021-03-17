@@ -35,7 +35,7 @@ import CNNarchitectures as ff1
 start = time.time()
 
 
-def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment,losses, trainedModel=[]):
+def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, augment, losses, trainedModel=[]):
     '''
     Load training data, split to validation and training and run training and save trained model
     '''
@@ -46,14 +46,19 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
 
 
     train_Y = np.loadtxt(datapath / "permf.csv")
-    train_Y = train_Y / 1e4  # convert to 'mD/1e4'
+    train_Y = np.log(train_Y)
     train_Y = train_Y.reshape(-1, 1)
-    train_Y_scaled = scaler.transform(train_Y)
-    # data_unscaled = scaler.inverse_transform(data_scaled) # to unscale the data back
+    train_Y = train_Y.astype('float32')
 
 
-    Train_x, Valid_x, Train_y, Valid_y = train_test_split(train_X, train_Y_scaled, test_size=0.25, random_state=42)
-    del train_X, train_Y
+    train_S = np.loadtxt(datapath / "stress.csv")
+    train_S = np.log(train_S)
+    train_S = train_S.reshape(-1, 1)
+    train_S = train_S.astype('float32')
+
+
+    Train_x, Valid_x, Train_y, Valid_y, Train_s, Valid_s = train_test_split(train_X, train_Y, train_S, test_size=0.25, random_state=42)
+    del train_X, train_Y, train_S
 
 
     Train_x = Train_x.reshape(-1, imsize_x, imsize_y, 1) # No idea why this is needed, try without
@@ -187,27 +192,21 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
-# Inputs 65000+10110 train/valid/test images (+augmentation)
-#path_train = Path("data/TrainTest75110_processed/Train/Augmented_centered") # Train X and y data
-#path_test = Path("data/TrainTest75110_processed/Test/Centered")             # Test X and y data
-#path_traintest = Path("data/TrainTest75110_processed/")                     # Combined train and test
-
 # Inputs 16000+2000 train/valid/test images (+augmentation)
-path_train = Path("data/Train/Augmented_centered/Bald")   # Train X and y data
-path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
-path_traintest = path_train
+path_train = Path("D:/expfracML/data/TrainTest247_processed/Augmented_centered")   # Train X, permf, stress data
+#path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
+
 
 
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
-epochs = 60
-augment = True                                          # Keras augmentation
-CNNarchitecture = [7]                                   # [1,4, ...]
+epochs = 10
+augment = False                                         # Keras augmentation
+CNNarchitecture = [10]                                  # [1,4, ...]
 subcases = [1]                                          # [1,2,3...]
 
 
-scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
 path_results = Path('results/')
 
 
@@ -229,7 +228,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 
              # Run training
-             model, result, fig1, losses = runTraining(path_train, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
+             model, result, fig1, losses = runTraining(path_train, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, augment, losses)
              modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
              model.save(modelname)
 
@@ -239,17 +238,17 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
                  result_pd.to_csv(file)
 
              # Run testing
-             modelpath = modelname
-             fig2, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
+             #modelpath = modelname
+             #fig2, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
 
              # Save plots to pdf
-             pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
-             pdf = PdfPages(path_results / pdfname)
-             pdf.savefig(fig1)
-             pdf.savefig(fig2)
-             pdf.close()
+             #pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
+             #pdf = PdfPages(path_results / pdfname)
+             #pdf.savefig(fig1)
+             #pdf.savefig(fig2)
+             #pdf.close()
 
-             del fig1, fig2, model
+             del fig1, model #fig2
 
 
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it

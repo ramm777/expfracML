@@ -6,7 +6,7 @@ from keras.layers.advanced_activations import LeakyReLU
 # imports for the ResNet
 import numpy as np
 from keras import layers
-from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D
+from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D, concatenate
 from keras.models import Model, load_model
 from keras.preprocessing import image
 from keras.utils import layer_utils
@@ -418,7 +418,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model = ResNet50(input_shape = inputShape, classes = 1)
 
 
-    elif no == 7:
+    elif no == 10:
 
         print('Multiple inputs Keras model')
 
@@ -457,7 +457,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
 
         x = Flatten()(x)
-        x = Dense(32)(x)
+        x = Dense(32, activation="linear")(x)
         x = Dense(16, activation="linear")(x)
         x = Model(inputs=input1, outputs=x)
 
@@ -465,7 +465,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         # the second branch opreates on the second input
         # -------------------------------------------------------------------------------------------------------
 
-        y = Sequential()
+        y = km.Sequential()
         y = Dense(32, activation="relu")(input2)
         y = Dense(16, activation="relu")(y)
         y = Model(inputs=input2, outputs=y)
@@ -474,7 +474,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         # -------------------------------------------------------------------------------------------------------
 
         combined = concatenate([x.output, y.output])  # combine the output of the two branches
-        z = Dense(8, activation="relu")(combined) # apply a FC layer and then a regression prediction on the combined outputs
+        z = Dense(8, activation="relu")(combined)     # apply a FC layer and then a regression prediction on the combined outputs
         z = Dense(1, activation="linear")(z)
 
         model = Model(inputs=[x.input, y.input], outputs=z)
