@@ -12,12 +12,15 @@ if platform == "linux" or platform == "linux2":
     os.environ['NUMBA_NUM_THREADS'] = "1"
     os.environ['NUMEXPR_NUM_THREADS'] = "1"
 
+    import matplotlib.pyplot as plt
+    import matplotlib
+    matplotlib.use('Agg')  # For the saving purposes. To revert use matplotlib.use('TkAgg')
+
 print("Current platform: " + platform)
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg') # For the saving purposes. To revert use matplotlib.use('TkAgg')
 from matplotlib.backends.backend_pdf import PdfPages
 from sklearn.model_selection import train_test_split
 
@@ -193,18 +196,17 @@ whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "ru
 
 
 # Inputs 16000+2000 train/valid/test images (+augmentation)
-path_train = Path("D:/expfracML/data/TrainTest247_processed/Augmented_centered")   # Train X, permf, stress data
+path_train = Path("data/TrainTest247_processed/Augmented_centered")   # Train X, permf, stress data
 #path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
-
 
 
 imsize_x = 128
 imsize_y = 128
-batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
-epochs = 10
-augment = False                                         # Keras augmentation
-CNNarchitecture = [10]                                  # [1,4, ...]
-subcases = [1]                                          # [1,2,3...]
+batch_size = 16                          # Number of training examples utilized in one iteration, larger is better
+epochs = 60
+augment = False                          # Keras augmentation
+CNNarchitecture = [10]                   # [1,4, ...]
+subcases = [11]                          # [1,2,3...]
 
 
 path_results = Path('results/')
@@ -242,11 +244,11 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              #fig2, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
 
              # Save plots to pdf
-             #pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
-             #pdf = PdfPages(path_results / pdfname)
-             #pdf.savefig(fig1)
+             pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
+             pdf = PdfPages(path_results / pdfname)
+             pdf.savefig(fig1)
              #pdf.savefig(fig2)
-             #pdf.close()
+             pdf.close()
 
              del fig1, model #fig2
 

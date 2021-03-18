@@ -457,8 +457,8 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
 
         x = Flatten()(x)
+        x = Dense(64, activation="linear")(x)
         x = Dense(32, activation="linear")(x)
-        x = Dense(16, activation="linear")(x)
         x = Model(inputs=input1, outputs=x)
 
 
@@ -466,15 +466,35 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         # -------------------------------------------------------------------------------------------------------
 
         y = km.Sequential()
+
         y = Dense(32, activation="relu")(input2)
-        y = Dense(16, activation="relu")(y)
+        y = Dropout(0.5)(y)
+
+        y = Dense(64, activation="relu")(y)
+        y = Dropout(0.5)(y)
+
+        y = Dense(32, activation="relu")(y)
+        y = Dropout(0.5)(y)
+
+        y = Dense(32, activation="relu")(y)
+
         y = Model(inputs=input2, outputs=y)
 
 
         # -------------------------------------------------------------------------------------------------------
 
         combined = concatenate([x.output, y.output])  # combine the output of the two branches
-        z = Dense(8, activation="relu")(combined)     # apply a FC layer and then a regression prediction on the combined outputs
+
+        z = Dense(64, activation="relu")(combined)     # apply a FC layer and then a regression prediction on the combined outputs
+        z = Dropout(0.5)(z)
+
+        z = Dense(64, activation="relu")(z)
+        z = Dropout(0.5)(z)
+
+        z = Dense(32, activation="relu")(z)
+        z = Dropout(0.5)(z)
+
+        z = Dense(16, activation="relu")(z)
         z = Dense(1, activation="linear")(z)
 
         model = Model(inputs=[x.input, y.input], outputs=z)
