@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 
 
 
+#-----------------------------------------------------------------------------------------------------------------------
+# Multiple curves on one plot in console mode (not in console much easier)
+
+fig = plt.figure(1)
+ax = fig.add_subplot()
+ax.plot([1,2,3,4,5], [1,2,3,4,5])
+ax.plot([10,20,30,40,50], [1,2,3,4,5])
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -15,7 +22,6 @@ from matplotlib import pyplot
 
 #pyplot.imshow(a1)
 #pyplot.show()
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -107,7 +113,3 @@ os.chdir('D:\\expfracML')    # change working directory
 # train_Y_label = np.array((range(1, num_classes+1)))
 # train_Y_one_hot = to_categorical(train_Y, num_classes=num_classes)
 
-
-# Plot model= > doesn't work
-#from keras.utils import plot_model
-#plot_model(model, to_file='model.png')
