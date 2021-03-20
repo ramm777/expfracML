@@ -49,13 +49,13 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
 
 
     train_Y = np.loadtxt(datapath / "permf.csv")
-    train_Y = np.log(train_Y)
+    train_Y = train_Y / np.max(train_Y)
     train_Y = train_Y.reshape(-1, 1)
     train_Y = train_Y.astype('float32')
 
 
     train_S = np.loadtxt(datapath / "stress.csv")
-    train_S = np.log(train_S)
+    train_S = train_S / np.max(train_S)
     train_S = train_S.reshape(-1, 1)
     train_S = train_S.astype('float32')
 
@@ -206,7 +206,7 @@ batch_size = 16                          # Number of training examples utilized 
 epochs = 60
 augment = False                          # Keras augmentation
 CNNarchitecture = [10]                   # [1,4, ...]
-subcases = [11]                          # [1,2,3...]
+subcases = [14,15,16,17,18]                          # [1,2,3...]
 
 
 path_results = Path('results/')

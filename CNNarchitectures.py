@@ -468,11 +468,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         y = km.Sequential()
 
         y = Dense(32, activation="relu")(input2)
-        y = Dropout(0.5)(y)
-
         y = Dense(64, activation="relu")(y)
-        y = Dropout(0.5)(y)
-
         y = Dense(32, activation="relu")(y)
         y = Dropout(0.5)(y)
 
@@ -486,11 +482,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         combined = concatenate([x.output, y.output])  # combine the output of the two branches
 
         z = Dense(64, activation="relu")(combined)     # apply a FC layer and then a regression prediction on the combined outputs
-        z = Dropout(0.5)(z)
-
         z = Dense(64, activation="relu")(z)
-        z = Dropout(0.5)(z)
-
         z = Dense(32, activation="relu")(z)
         z = Dropout(0.5)(z)
 
