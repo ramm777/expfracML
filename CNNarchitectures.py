@@ -420,7 +420,8 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
     elif no == 10:
 
-        print('Multiple inputs Keras model')
+
+        print('Multiple inputs Keras cnn architecture')
 
         inputShape1 = (imsize_x, imsize_y, 1)  # image height, width and depth (no of channels, black/white = 1)
         inputShape2 = (1,)

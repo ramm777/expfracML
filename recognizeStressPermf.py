@@ -17,6 +17,7 @@ if platform == "linux" or platform == "linux2":
     matplotlib.use('Agg')  # For the saving purposes. To revert use matplotlib.use('TkAgg')
 
 print("Current platform: " + platform)
+print('Recornize stress-permeability')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -53,15 +54,17 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     train_Y = train_Y.reshape(-1, 1)
     train_Y = train_Y.astype('float32')
 
+    if CNNarchitecture == 10:
+        train_S = np.loadtxt(datapath / "stress.csv")
+        train_S = train_S / np.max(train_S)
+        train_S = train_S.reshape(-1, 1)
+        train_S = train_S.astype('float32')
 
-    train_S = np.loadtxt(datapath / "stress.csv")
-    train_S = train_S / np.max(train_S)
-    train_S = train_S.reshape(-1, 1)
-    train_S = train_S.astype('float32')
-
-
-    Train_x, Valid_x, Train_y, Valid_y, Train_s, Valid_s = train_test_split(train_X, train_Y, train_S, test_size=0.25, random_state=42)
-    del train_X, train_Y, train_S
+        Train_x, Valid_x, Train_y, Valid_y, Train_s, Valid_s = train_test_split(train_X, train_Y, train_S, test_size=0.25, random_state=42)
+        del train_X, train_Y, train_S
+    else:
+        Train_x, Valid_x, Train_y, Valid_y = train_test_split(train_X, train_Y, test_size=0.25, random_state=42)
+        del train_X, train_Y
 
 
     Train_x = Train_x.reshape(-1, imsize_x, imsize_y, 1) # No idea why this is needed, try without
@@ -78,13 +81,17 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
         model.summary()
     else:
         print('Continue training of pretrained model')
-        model = trainedModel
-        model.summary()
+        print('Continue not possible at the modemnt => not finished')
+        #model = trainedModel
+        #model.summary()
 
 
     # Train_s => train stress, Valid_s => validation stress
     print('Train default (no keras data augmentation)')
-    result = model.fit(x=[Train_x, Train_s], y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=([Valid_x, Valid_s], Valid_y))
+    if CNNarchitecture == 10:
+        result = model.fit(x=[Train_x, Train_s], y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=([Valid_x, Valid_s], Valid_y))
+    else:
+        result = model.fit(x=Train_x, y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
 
 
     # Plot loss and accuracy
@@ -196,7 +203,7 @@ whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "ru
 
 
 # Inputs 16000+2000 train/valid/test images (+augmentation)
-path_train = Path("data/TrainTest247_processed/Augmented_centered")   # Train X, permf, stress data
+path_train = Path("data/TrainTest247_processed/Augmented_centered/Stress_embeded")   # Train X, permf, stress data
 #path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
 
 
@@ -205,8 +212,8 @@ imsize_y = 128
 batch_size = 16                          # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = False                          # Keras augmentation
-CNNarchitecture = [10]                   # [1,4, ...]
-subcases = [20, 21, 22]                  # [1,2,3...]
+CNNarchitecture = [5]                    # [1,4, ...]
+subcases = [20]                          # [1,2,3...]
 
 
 path_results = Path('results/')
