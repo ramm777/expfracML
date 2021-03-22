@@ -87,3 +87,63 @@ def identifyFilename():
 #batch = it.next()                        # From here perform again to see another iteration
 #image = batch[0]
 #plt.imshow(image[0,:,:,0])
+
+
+def someScripts():
+    # Maunally divide test / valid as 222*30 and 25*30
+    train_S1 = train_S[0 : 247*30].copy()
+    train_S2 = train_S[247*30 : 247*30*2].copy()
+    train_S3 = train_S[247*30*2 : 247*30*3].copy()
+    train_S4 = train_S[247*30*3 : 247*30*4].copy()
+
+    Train_s1 = train_S1[0:6660].copy()
+    Train_s2 = train_S2[0:6660].copy()
+    Train_s3 = train_S3[0:6660].copy()
+    Train_s4 = train_S4[0:6660].copy()
+
+    Valid_s1 = train_S1[6660:7410].copy()
+    Valid_s2 = train_S2[6660:7410].copy()
+    Valid_s3 = train_S3[6660:7410].copy()
+    Valid_s4 = train_S4[6660:7410].copy()
+
+    Train_s = np.concatenate((Train_s1, Train_s2, Train_s3, Train_s4))
+    Valid_s = np.concatenate((Valid_s1, Valid_s2, Valid_s3, Valid_s4))
+    del train_S1, train_S2, train_S3, train_S4, Train_s1, Train_s2, Train_s3, Train_s4, Valid_s1, Valid_s2, Valid_s3, Valid_s4
+
+    train_Y1 = train_Y[0 : 247*30].copy()
+    train_Y2 = train_Y[247*30 : 247*30*2].copy()
+    train_Y3 = train_Y[247*30*2 : 247*30*3].copy()
+    train_Y4 = train_Y[247*30*3 : 247*30*4].copy()
+
+    Train_y1 = train_Y1[0:6660].copy()
+    Train_y2 = train_Y2[0:6660].copy()
+    Train_y3 = train_Y3[0:6660].copy()
+    Train_y4 = train_Y4[0:6660].copy()
+
+    Valid_y1 = train_Y1[6660:7410].copy()
+    Valid_y2 = train_Y2[6660:7410].copy()
+    Valid_y3 = train_Y3[6660:7410].copy()
+    Valid_y4 = train_Y4[6660:7410].copy()
+
+    Train_y = np.concatenate((Train_y1, Train_y2, Train_y3, Train_y4))
+    Valid_y = np.concatenate((Valid_y1, Valid_y2, Valid_y3, Valid_y4))
+    del train_Y1, train_Y2, train_Y3, train_Y4, Train_y1, Train_y2, Train_y3, Train_y4, Valid_y1, Valid_y2, Valid_y3, Valid_y4
+
+    train_X1 = train_X[0: 247 * 30].copy()
+    train_X2 = train_X[247 * 30: 247 * 30 * 2].copy()
+    train_X3 = train_X[247 * 30 * 2: 247 * 30 * 3].copy()
+    train_X4 = train_X[247 * 30 * 3: 247 * 30 * 4].copy()
+
+    Train_x1 = train_X1[0:6660].copy()
+    Train_x2 = train_X2[0:6660].copy()
+    Train_x3 = train_X3[0:6660].copy()
+    Train_x4 = train_X4[0:6660].copy()
+
+    Valid_x1 = train_X1[6660:7410].copy()
+    Valid_x2 = train_X2[6660:7410].copy()
+    Valid_x3 = train_X3[6660:7410].copy()
+    Valid_x4 = train_X4[6660:7410].copy()
+
+    Train_x = np.concatenate((Train_x1, Train_x2, Train_x3, Train_x4))
+    Valid_x = np.concatenate((Valid_x1, Valid_x2, Valid_x3, Valid_x4))
+    del train_X1, train_X2, train_X3, train_X4, Train_x1, Train_x2, Train_x3, Train_x4, Valid_x1, Valid_x2, Valid_x3, Valid_x4

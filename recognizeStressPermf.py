@@ -206,7 +206,7 @@ batch_size = 16                          # Number of training examples utilized 
 epochs = 60
 augment = False                          # Keras augmentation
 CNNarchitecture = [10]                   # [1,4, ...]
-subcases = [14,15,16,17,18]                          # [1,2,3...]
+subcases = [20, 21, 22]                  # [1,2,3...]
 
 
 path_results = Path('results/')
