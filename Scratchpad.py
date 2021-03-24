@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-# Multiple curves on one plot in console mode (not in console much easier)
+# Multiple curves on one plot in console mode (not in console is much easier by the way)
 
 fig = plt.figure(1)
 ax = fig.add_subplot()

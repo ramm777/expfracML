@@ -49,8 +49,12 @@ def loadPreprocessImages(datapath_x, imnum, coarse_imsize_x, coarse_imsize_y):
             image = Image.open(image_path)
         except:
             print("Image cannot be open, i: %s" %i)
-            input("Press Enter to continue")
-            continue
+            a = input("Press 1 to continue 0 to abort")
+            if a == str(1):
+                continue
+            elif a == str(0):
+                break
+
 
         image_resized = image.resize((coarse_imsize_x, coarse_imsize_y))
         image_grey = image_resized.convert('L')

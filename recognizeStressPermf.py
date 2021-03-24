@@ -54,7 +54,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     train_Y = train_Y.reshape(-1, 1)
     train_Y = train_Y.astype('float32')
 
-    if CNNarchitecture == 10:
+    if CNNarchitecture == 10: # the only mixed-CNN
         train_S = np.loadtxt(datapath / "stress.csv")
         train_S = train_S / np.max(train_S)
         train_S = train_S.reshape(-1, 1)
@@ -129,7 +129,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     return model, result, fig1, losses
 
 
-def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
+def runTesting(datapath, modelpath, imsize_x, imsize_y, losses):
     '''
     Load saved ML model and testing data and run evaluation and prediction
         Inputs:
@@ -142,30 +142,30 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
     '''
 
-    test_X = np.load(datapath / "test_X.npy" )
     print('Running testing... ')
 
-
+    test_X = np.load(datapath / "test_X.npy" )
     test_X = test_X.astype('float32')
     test_X = test_X.reshape(-1, imsize_x, imsize_y, 1)
     test_X = test_X / 255.
 
-
     test_Y = np.loadtxt(datapath / "permf.csv")
-    test_Y = test_Y / 1e4  # convert to 'mD/1e4'
+    test_Y = test_Y.astype('float32')
     test_Y = test_Y.reshape(-1, 1)
-    test_Y_scaled = scaler.transform(test_Y)
+    test_Y = test_Y / 69461.0
+    print("WARNING: scaling is done manually max(train_Y)")
+
+    test_S = np.loadtxt(datapath / "stress.csv")
 
 
     model = km.load_model(modelpath, custom_objects=None, compile=True)
 
 
     predicted = model.predict(test_X)
-    predicted_unscaled = scaler.inverse_transform(predicted)  # to unscale the data back
 
 
-    test_loss = model.evaluate(test_X, test_Y_scaled, verbose=1)
-    mape = ff.mape(test_Y, predicted_unscaled)
+    test_loss = model.evaluate(test_X, test_Y, verbose=1)
+    mape = ff.mape(test_Y, predicted)
     res3 = "Test evaluation loss: %.2e" % test_loss
     res4 = "MAPE: %.2f" % mape
     print(res3)
@@ -178,10 +178,10 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     fig2 = plt.figure(2, figsize=(15, 6))
     ax1 = fig2.add_subplot(121)
     ax2 = fig2.add_subplot(122)
-    ax1.plot(test_Y, predicted_unscaled, 'r+', label='Predicted vs. Actual permeability')
+    ax1.plot(test_Y, predicted, 'r+', label='Predicted vs. Actual permeability')
     ax1.plot(test_Y, test_Y, label='Linear')
-    ax1.set_ylabel("Predicted permeability, md/1e4")
-    ax1.set_xlabel("Actual (test) permeability, md/1e4")
+    ax1.set_ylabel("Predicted permeability, scaled [0,1]")
+    ax1.set_xlabel("Actual (test) permeability, scaled [0,1]")
     ax1.legend()
     fig2.text(0.6, 0.52, 'Results train/test: ')
     fig2.text(0.6, 0.5, losses[:2])
@@ -192,6 +192,15 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     # plt.show()
     plt.close()
 
+    fig3 = plt.figure(3)
+    ax1 = fig3.add_subplot(121)
+    ax2 = fig3.add_subplot(122)
+    ax1.plot(test_S[:30], predicted[:30], 'r+', label='Predicted relationship')
+    ax1.plot(test_S[:30], test_Y[:30], '-', label='Actual relationship')
+    ax1.set_ylabel("Permeability, scaled [0,1]")
+    ax1.set_xlabel("Stress, Pa")
+    ax1.legend()
+
     return fig2, losses
 
 
@@ -199,12 +208,12 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 # Inputs for training
 
 
-whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
+whatToRun = "singleTesting" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
 # Inputs 16000+2000 train/valid/test images (+augmentation)
-path_train = Path("data/TrainTest247_processed/Augmented_centered/Stress_embeded")   # Train X, permf, stress data
-#path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data
+#path_train = Path("data/TrainTest247_processed/Augmented_centered/Stress_embeded")   # Train X, permf, stress data
+path_test = Path("data/TrainTest247_processed/Test37/Centered/Stress_embeded") # Test X and y data
 
 
 imsize_x = 128
@@ -212,8 +221,8 @@ imsize_y = 128
 batch_size = 16                          # Number of training examples utilized in one iteration, larger is better
 epochs = 60
 augment = False                          # Keras augmentation
-CNNarchitecture = [5]                    # [1,4, ...]
-subcases = [20]                          # [1,2,3...]
+CNNarchitecture = [6]                    # [1,4, ...]
+subcases = [32, 33, 34]                  # [1,2,3...]
 
 
 path_results = Path('results/')
@@ -238,12 +247,12 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
              # Run training
              model, result, fig1, losses = runTraining(path_train, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, augment, losses)
-             modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
+             modelname = "run_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
              model.save(modelname)
 
              # Save results
              result_pd = pd.DataFrame(result.history)
-             with open("result_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".csv", mode='w') as file:
+             with open("run_result_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".csv", mode='w') as file:
                  result_pd.to_csv(file)
 
              # Run testing
@@ -251,7 +260,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
              #fig2, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
 
              # Save plots to pdf
-             pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
+             pdfname = "run_results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
              pdf = PdfPages(path_results / pdfname)
              pdf.savefig(fig1)
              #pdf.savefig(fig2)
@@ -262,7 +271,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
-    modelname = "model_cnn6_4.h5py"
+    modelname = "run_cnn6_33.h5py"
     modelpath = Path("selected_models/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
 
@@ -289,9 +298,9 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 elif whatToRun == "singleTesting":  # Run single testing
 
-    modelname = "model_cnn4_2.h5py"
+    modelname = "run_cnn6_33.h5py"
     losses = [float("NaN") for x in range(0, 11)]
-    fig2, losses = runTesting(path_test, modelname, imsize_x, imsize_y, scaler, losses)
+    fig2, losses = runTesting(path_test, modelname, imsize_x, imsize_y, losses)
 
     pdfname = modelname[:-5] + ".pdf"
     pdf = PdfPages(path_results / pdfname )  # Save results to pdf

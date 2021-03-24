@@ -12,11 +12,9 @@ import functions1 as ff1
 # Scripts to collect data for ML 289 / 247 images stress-permf
 
 
-def prepare247Images():
+def prepare247Images(imnum, datapath):
 
-    imnum2 = 250
-    datapath_x = Path("D:\\expfracML\\data\\TrainTest247_raw\\")
-    train_X = ff.loadPreprocessImages(datapath_x, imnum2, 128, 128)
+    train_X = ff.loadPreprocessImages(datapath, imnum, 128, 128)
 
     # Enlarge images to 247*30 each = 7410
     for i in range(train_X.shape[0]):
@@ -32,15 +30,17 @@ def prepare247Images():
         del image, duplicated
 
     np.save('test_X.npy', new_train_X )
-    print('Finsihed creating 7410 dataset of images')
+    print('Finsihed creating 30*x dataset of images')
 
-
+imnum = 37 # This must be the last image number, disregarding abscent images
+datapath = Path("D:\\expfracML\\data\\TrainTest247_processed\\Test37\\Raw")
+prepare247Images(imnum, datapath)
 
 
 def loadmatCoarsen():
 
-    permf = sio.loadmat("data\\TrainTest247\\rpermf.mat")['rpermf_all']
-    stress= sio.loadmat("data\\TrainTest247\\rstress.mat")['rstress_all']
+    permf = sio.loadmat("data\\TrainTest247_processed\\Test37\\rpermf.mat")['rpermf_all']
+    stress= sio.loadmat("data\\TrainTest247_processed\\Test37\\rstress.mat")['rstress_all']
 
     # Coarsen curves of stress-perm
     permf1 = ff1.coarsenArrayLog2(permf.transpose(), 30, exp=10)
@@ -60,20 +60,18 @@ def loadmatCoarsen():
 
 
 
-def collectStressPermf():
+def collectStressPermf(casesnum=37, plot_all=False):
     """
     Collect stress and permf data from raw 300 simulations results. Notice: clean of NaNs is done manually.
     Not fully generatized function, need to clean failed subcases manually
     """
-
-    casesnum = 250
 
     stress_all = [np.nan for x in range(casesnum)]
     permf_all = [np.nan for y in range(casesnum)]
 
     for caseID in range(1, casesnum+1):
 
-        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5full/")
+        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-1full/")
         modelpath = datapath / ('case5_' + str(caseID) + '/' + 'case5_' + str(caseID) + '.mat')
 
         try:
@@ -93,8 +91,29 @@ def collectStressPermf():
         print("WARNING: Cleaned NaNs manually, but this function saves unclened data")
         print("WARNING: perform cleaning of NaNs")
 
+        del permf, stress
+
+        # Save data
         np.save('stress.npy', stress_all)
         np.save('permf.npy', permf_all)
+
+        #-----------------------------------------------------
+        # Plot all curves in one plot
+        if plot_all == True:
+
+            fig = plt.figure(1)
+            ax = fig.add_subplot()
+            for j in range(casesnum):
+                permf = permf_all[j].copy()
+                stress = stress_all[j].copy()
+
+                ax.plot(stress, permf)
+
+                del permf, stress
+
+            plt.xlabel("Stress, Pa")
+            plt.ylabel("Permf, mD")
+        # -----------------------------------------------------
 
 
 
@@ -104,8 +123,8 @@ def loadSaveCSV():
     """
 
     # Load
-    permf = np.load("permf.npy", allow_pickle=True)
-    stress = np.load("stress.npy", allow_pickle=True)
+    permf = np.load("data\TrainTest247_processed\Test37\permf.npy", allow_pickle=True)
+    stress = np.load("data\TrainTest247_processed\Test37\stress.npy", allow_pickle=True)
 
 
     # Convert object ndarray (rows are not equal in size) to dictionary (rows are not equal in size)
@@ -120,6 +139,16 @@ def loadSaveCSV():
     pd.DataFrame(permf2).to_csv("permf.csv", index=False)
     pd.DataFrame(stress2).to_csv("stress.csv", index=False)
 
+
+def embedStressToImages():
+    """
+    This is scripts not a function to embed stress into images data
+    Need to load stress and images before
+    """
+
+    new_images1 = new_images.copy()
+    for i in range(len(new_images1)):
+        new_images1[i, :20, :20] = test_S[i].copy()
 
 
 # How to create np.array of NaNs
