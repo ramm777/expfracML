@@ -3,20 +3,46 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
+def dummy():
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Multiple curves on one plot in console mode (not in console is much easier by the way)
+    path_results = Path('results/')
 
-fig = plt.figure(1)
-ax = fig.add_subplot()
-ax.plot([1,2,3,4,5], [1,2,3,4,5])
-ax.plot([10,20,30,40,50], [1,2,3,4,5])
+    fig1 = plt.figure(1)
+    plt.plot([1, 2, 3], [10, 20, 30])
+    plt.close()
+    fig2 = plt.figure(1)
+    plt.plot([10, 20, 30], [100, 200, 300], 'rx')
+    plt.close()
+
+    pdfname = "1.pdf"
+    pdf = PdfPages(path_results / pdfname)
+
+    figures = []
+    figures.append(fig1)
+    figures.append(fig2)
+
+    for i in range(len(figures)):
+        pdf.savefig(figures[i])
+    pdf.close()
+
+dummy()
+
+
+
+def saveMultipleCurves():
+    """
+        Example of multiple curves on one plot in console mode (not in console is much easier by the way)
+    """
+    fig = plt.figure(1)
+    ax = fig.add_subplot()
+    ax.plot([1,2,3,4,5], [1,2,3,4,5])
+    ax.plot([10,20,30,40,50], [1,2,3,4,5])
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # How to load and see image using matplotlib
-from matplotlib import image
-from matplotlib import pyplot
+#from matplotlib import image
+#from matplotlib import pyplot
 
 #a1 = image.imread("D:\\mrst-2017a\\modules\\vemmech\\RESULTS\\ML\\createManyGstokes\\1.jpg")
 
@@ -57,39 +83,26 @@ from matplotlib import pyplot
 # plt.close()
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-# Print formattion
+def exampleOfPrint():
+
+    """
+    Print formats example
+    """
+
+    print('Something %.2e' % 0.0002553) # Scientific
+    print('Something %s' % 0.0002553)   # String
+    print('Something %d' % 0.0002553)   # Integers
+    print('Something %f' % 0.0002553)   # Floating
 
 
+    # 2 placeholders %,  "John is 23 years old."
+    name = "John"
+    age = 23
+    print("%s is %d years old." % (name, age))
 
-print('Something %.2e' % 0.0002553) # Scientific
-print('Something %s' % 0.0002553)   # String
-print('Something %d' % 0.0002553)   # Integers
-print('Something %f' % 0.0002553)   # Floating
+    a = 1 + 1
+    print(a)
 
-
-# 2 placeholders %,  "John is 23 years old."
-name = "John"
-age = 23
-print("%s is %d years old." % (name, age))
-
-a = 1 + 1
-print(a)
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Logging - didn't fully understand how to use it.
-
-import logging
-
-logging.basicConfig(filename="logfilename.log", level=logging.INFO)
-logging.info('your text goes here')
-
-
-# Speficy directories
-import os
-os.getcwd()                  # get current working directory
-os.chdir('D:\\expfracML')    # change working directory
 
 
 #-----------------------------------------------------------------------------------------------------------------------

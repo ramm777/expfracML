@@ -287,8 +287,10 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 elif whatToRun == "singleTesting":  # Run single testing
 
     modelname = "model_cnn4_2.h5py"
+    modelpath = Path("selected_models/")
+
     losses = [float("NaN") for x in range(0, 11)]
-    fig2, losses = runTesting(path_test, modelname, imsize_x, imsize_y, scaler, losses)
+    fig2, losses = runTesting(path_test, (modelpath / modelname), imsize_x, imsize_y, scaler, losses)
 
     pdfname = modelname[:-5] + ".pdf"
     pdf = PdfPages(path_results / pdfname )  # Save results to pdf
@@ -299,7 +301,7 @@ else: print('Warning: select what to run')
 
 
 # Load and plot training results CSV file
-#ff.loadPlotCSV('result_cnn2_12.csv')
+#fig = ff2.loadPlotTrainResults('result_cnn2_12.csv')
 
 
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)

@@ -116,6 +116,25 @@ def collectStressPermf(casesnum=37, plot_all=False):
         # -----------------------------------------------------
 
 
+def checkCases(casesnum=250):
+    """
+        Check and find abscent cases
+    """
+
+    for caseID in range(1, casesnum+1):
+
+        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-1full/")
+        modelpath = datapath / ('case5_' + str(caseID) + '/' + 'case5_' + str(caseID) + '.mat')
+
+        try:
+            stress = sio.loadmat(modelpath)['mstresshistbc']
+            permf = sio.loadmat(modelpath)['permf']
+        except:
+            print("No data for the case: " + str(caseID))
+            print("Continue without this case")
+            continue
+
+
 
 def loadSaveCSV():
     """
