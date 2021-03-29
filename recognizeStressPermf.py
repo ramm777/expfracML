@@ -134,7 +134,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     return model, result, figures, losses
 
 
-def runTesting(datapath, modelpath, imsize_x, imsize_y, losses, figures):
+def runTesting(datapath, CNNarchitecture, modelpath, imsize_x, imsize_y, losses, figures):
     '''
     Load saved ML model and testing data and run evaluation and prediction
         Inputs:
@@ -158,15 +158,28 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, losses, figures):
     test_Y = test_Y.astype('float32')
     test_Y = test_Y.reshape(-1, 1)
     test_Y = test_Y / 69461.0
-    print("WARNING: scaling is done manually max(train_Y)")
+    print("WARNING: scaling of permf is done manually max(train_Y)")
 
     test_S = np.loadtxt(datapath / "stress.csv")
 
+    if CNNarchitecture == 10 or CNNarchitecture == 11: # the only mixed-CNN
+        test_S = test_S / 50000054.0
+        test_S = test_S.reshape(-1, 1)
+        test_S = test_S.astype('float32')
+        print("WARNING: scaling of stress is done manually max(train_S)")
+        print("However, max(train_S) should be == to max(test_S)")
+
+
     model = km.load_model(modelpath, custom_objects=None, compile=True)
 
-    predicted = model.predict(test_X)
+    if CNNarchitecture == 10 or CNNarchitecture == 11:
+        predicted = model.predict([test_X, test_S])
+        test_loss = model.evaluate([test_X, test_S], test_Y, verbose=1)
+    else:
+        predicted = model.predict(test_X)
+        test_loss = model.evaluate(test_X, test_Y, verbose=1)
 
-    test_loss = model.evaluate(test_X, test_Y, verbose=1)
+
     mape = ff.mape(test_Y, predicted)
     res3 = "Test evaluation loss: %.2e" % test_loss
     res4 = "MAPE: %.2f" % mape
@@ -274,7 +287,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
              # Run testing
              modelpath = Path(modelname)
-             figures, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, losses, figures)
+             figures, losses = runTesting(path_test, CNNarchitecture[j], modelpath, imsize_x, imsize_y, losses, figures)
 
              ff2.resultsToPDF(modelpath, path_results, figures)
 
@@ -295,7 +308,8 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
     model.save(modelname_new)
 
     # Run testing
-    figures, losses = runTesting(path_test, modelname_new, imsize_x, imsize_y, losses, figures)
+    assert len(CNNarchitecture) == 1
+    figures, losses = runTesting(path_test, CNNarchitecture[0], modelname_new, imsize_x, imsize_y, losses, figures)
 
     # Save results
     result_pd = pd.DataFrame(result.history)
@@ -310,7 +324,9 @@ elif whatToRun == "singleTesting":  # Run single testing
     modelname = Path("run_cnn5_20.h5py")
     modelpath = Path("selected_models1/")
 
-    figures, losses = runTesting(path_test, (modelpath / modelname), imsize_x, imsize_y, losses, figures)
+    assert len(CNNarchitecture) == 1
+
+    figures, losses = runTesting(path_test, CNNarchitecture[0], (modelpath / modelname), imsize_x, imsize_y, losses, figures)
     ff2.resultsToPDF(modelname, path_results, figures)
 
 else: print('Warning: select what to run')
