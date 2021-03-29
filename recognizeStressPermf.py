@@ -55,7 +55,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     train_Y = train_Y.reshape(-1, 1)
     train_Y = train_Y.astype('float32')
 
-    if CNNarchitecture == 10: # the only mixed-CNN
+    if CNNarchitecture == 10 or CNNarchitecture == 11: # the only mixed-CNN
         train_S = np.loadtxt(datapath / "stress.csv")
         train_S = train_S / np.max(train_S)
         train_S = train_S.reshape(-1, 1)
@@ -89,7 +89,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
 
     # Train_s => train stress, Valid_s => validation stress
     print('Train default (no keras data augmentation)')
-    if CNNarchitecture == 10:
+    if CNNarchitecture == 10 or CNNarchitecture == 11:
         result = model.fit(x=[Train_x, Train_s], y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=([Valid_x, Valid_s], Valid_y))
     else:
         result = model.fit(x=Train_x, y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
@@ -228,17 +228,17 @@ whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "ru
 
 
 # Inputs 16000+2000 train/valid/test images (+augmentation)
-path_train = Path("data/TrainTest247_processed/Augmented_centered/Stress_embeded")   # Train X, permf, stress data
-path_test = Path("data/TrainTest247_processed/Test37/Centered/Stress_embeded")       # Test X and y data
+path_train = Path("data/TrainTest247_processed/Augmented_centered")   # Train X, permf, stress data
+path_test = Path("data/TrainTest247_processed/Test37/Centered")       # Test X and y data
 
 
 imsize_x = 128
 imsize_y = 128
-batch_size = 16                          # Number of training examples utilized in one iteration, larger is better
-epochs = 1
-augment = False                          # Keras augmentation
-CNNarchitecture = [6]                    # [1,4, ...]
-subcases = [35]                          # [1,2,3...]
+batch_size = 16                           # Number of training examples utilized in one iteration, larger is better
+epochs = 2
+augment = False                           # Keras augmentation
+CNNarchitecture = [11]                    # [1,4, ...]
+subcases = [1]                            # [1,2,3...]
 
 
 path_results = Path('results/')

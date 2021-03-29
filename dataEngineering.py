@@ -32,9 +32,9 @@ def prepare247Images(imnum, datapath):
     np.save('test_X.npy', new_train_X )
     print('Finsihed creating 30*x dataset of images')
 
-imnum = 37 # This must be the last image number, disregarding abscent images
-datapath = Path("D:\\expfracML\\data\\TrainTest247_processed\\Test37\\Raw")
-prepare247Images(imnum, datapath)
+#imnum = 37 # This must be the last image number, disregarding abscent images
+#datapath = Path("D:\\expfracML\\data\\TrainTest247_processed\\Test37\\Raw")
+#prepare247Images(imnum, datapath)
 
 
 def loadmatCoarsen():
@@ -134,6 +134,7 @@ def checkCases(casesnum=250):
             print("Continue without this case")
             continue
 
+#checkCases()
 
 
 def loadSaveCSV():
