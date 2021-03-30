@@ -92,11 +92,18 @@ def collectStressPermf(casesnum, datapath, plot_all=False):
 
         del permf, stress
 
-    # Delete items from the nested list that has no data (NaN)
+    # Delete items from the nested list that has no data (all NaNs vectors)
     for i in no_data:
         del stress_all[i-1]
         del permf_all[i-1]
-        print("INFORMATION: cleaned NaNs")
+        print("INFORMATION: cleaned NaNs in curve " + str(i-1))
+
+
+    # Double-check that there is no no data
+    for i in range(len(permf)):
+        if np.isnan(permf[i][0]):
+            print('WARNING: NaNs in curve' + str(i))
+            break
 
 
     # Save data
@@ -123,9 +130,9 @@ def collectStressPermf(casesnum, datapath, plot_all=False):
 
     # -----------------------------------------------------
 
-casesnum=250
-datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-2full/")
-collectStressPermf(casesnum, datapath, plot_all=True)
+#casesnum=250
+#datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-2full/")
+#collectStressPermf(casesnum, datapath, plot_all=True)
 
 
 def checkCases(casesnum, datapath):
@@ -146,9 +153,9 @@ def checkCases(casesnum, datapath):
             continue
 
 
-#casesnum=250
-#datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-2full/")
-#checkCases(casesnum, datapath)
+casesnum=250
+datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-3full/")
+checkCases(casesnum, datapath)
 
 
 def loadSaveCSV():
