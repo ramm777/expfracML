@@ -248,19 +248,18 @@ path_test = Path("data/TrainTest247_processed/Test37/Centered")       # Test X a
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                           # Number of training examples utilized in one iteration, larger is better
-epochs = 2
+epochs = 60
 augment = False                           # Keras augmentation
 CNNarchitecture = [11]                    # [1,4, ...]
 subcases = [1]                            # [1,2,3...]
-
-
 path_results = Path('results/')
-losses = [float("NaN") for x in range(0, 11)]
-figures = []
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Run and save results
 
+losses = [float("NaN") for x in range(0, 11)]
+figures = []
 
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
@@ -296,19 +295,21 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
-    print('WARNING: continueTraining may not be correct')
     modelname = Path("run_cnn6_32.h5py")
     modelpath = Path("selected_models/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
+    print('Continue training model: ' + modelname.name)
+
+    assert len(CNNarchitecture) == 1
+    assert int(modelname.stem[-4]) == CNNarchitecture[0]
 
     # Run training
-    model, result, figures, losses = runTraining(path_train, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, augment, losses, figures, trainedModel=model)
+    model, result, figures, losses = runTraining(path_train, CNNarchitecture[0], imsize_x, imsize_y, batch_size, epochs, augment, losses, figures, trainedModel=model)
 
     modelname_new = Path(modelname.stem + "_cont" + ".h5py")
     model.save(modelname_new)
 
     # Run testing
-    assert len(CNNarchitecture) == 1
     figures, losses = runTesting(path_test, CNNarchitecture[0], modelname_new, imsize_x, imsize_y, losses, figures)
 
     # Save results
@@ -323,18 +324,21 @@ elif whatToRun == "singleTesting":  # Run single testing
 
     modelname = Path("run_cnn5_20.h5py")
     modelpath = Path("selected_models1/")
+    print('Single testing model: ' + modelname.name)
 
     assert len(CNNarchitecture) == 1
+    assert int(modelname.stem[-4]) == CNNarchitecture[0]
 
     figures, losses = runTesting(path_test, CNNarchitecture[0], (modelpath / modelname), imsize_x, imsize_y, losses, figures)
     ff2.resultsToPDF(modelname, path_results, figures)
 
 else: print('Warning: select what to run')
+print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
 
 # Load and plot training results CSV file
 #fig = ff2.loadPlotTrainResults('result_cnn2_12.csv')
 
 
-print('Finished. Runtime, min: ',  (time.time() - start) / 60)
+
 

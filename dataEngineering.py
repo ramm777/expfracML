@@ -3,10 +3,12 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import pandas as pd
+import time
 
 import utils as ff
 import functions1 as ff1
 
+start = time.time()
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Scripts to collect data for ML 289 / 247 images stress-permf
@@ -59,19 +61,18 @@ def loadmatCoarsen():
     np.savetxt('stress.csv', stress2, delimiter=',')
 
 
-
-def collectStressPermf(casesnum=37, plot_all=False):
+def collectStressPermf(casesnum, datapath, plot_all=False):
     """
-    Collect stress and permf data from raw 300 simulations results. Notice: clean of NaNs is done manually.
+    Collect stress and permf data from the raw matlab-idc simulations results. Notice: clean of NaNs is done manually.
     Not fully generatized function, need to clean failed subcases manually
     """
 
     stress_all = [np.nan for x in range(casesnum)]
     permf_all = [np.nan for y in range(casesnum)]
+    no_data = []
 
     for caseID in range(1, casesnum+1):
 
-        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-1full/")
         modelpath = datapath / ('case5_' + str(caseID) + '/' + 'case5_' + str(caseID) + '.mat')
 
         try:
@@ -80,6 +81,7 @@ def collectStressPermf(casesnum=37, plot_all=False):
         except:
             print("No data for the case: " + str(caseID))
             print("Continue without this case")
+            no_data.append(caseID)
             continue
 
         stress = np.reshape(stress, (stress.size, ))
@@ -88,42 +90,51 @@ def collectStressPermf(casesnum=37, plot_all=False):
         stress_all[caseID-1] = stress
         permf_all[caseID-1] = permf
 
-        print("WARNING: Cleaned NaNs manually, but this function saves unclened data")
-        print("WARNING: perform cleaning of NaNs")
-
         del permf, stress
 
-        # Save data
-        np.save('stress.npy', stress_all)
-        np.save('permf.npy', permf_all)
-
-        #-----------------------------------------------------
-        # Plot all curves in one plot
-        if plot_all == True:
-
-            fig = plt.figure(1)
-            ax = fig.add_subplot()
-            for j in range(casesnum):
-                permf = permf_all[j].copy()
-                stress = stress_all[j].copy()
-
-                ax.plot(stress, permf)
-
-                del permf, stress
-
-            plt.xlabel("Stress, Pa")
-            plt.ylabel("Permf, mD")
-        # -----------------------------------------------------
+    # Delete items from the nested list that has no data (NaN)
+    for i in no_data:
+        del stress_all[i-1]
+        del permf_all[i-1]
+        print("INFORMATION: cleaned NaNs")
 
 
-def checkCases(casesnum=250):
+    # Save data
+    np.save('stress.npy', stress_all)
+    np.save('permf.npy', permf_all)
+
+    #-----------------------------------------------------
+    # Plot all curves in one plot
+    if plot_all == True:
+
+        fig = plt.figure(1)
+        ax = fig.add_subplot()
+        for j in range(casesnum):
+            permf = permf_all[j].copy()
+            stress = stress_all[j].copy()
+
+            ax.plot(stress, permf)
+
+            del permf, stress
+
+        plt.xlabel("Stress, Pa")
+        plt.ylabel("Permf, mD")
+        plt.show()
+
+    # -----------------------------------------------------
+
+casesnum=250
+datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-2full/")
+collectStressPermf(casesnum, datapath, plot_all=True)
+
+
+def checkCases(casesnum, datapath):
     """
-        Check and find abscent cases
+        Check and find abscent cases from the matlab-idc simulation run
     """
 
     for caseID in range(1, casesnum+1):
 
-        datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-1full/")
         modelpath = datapath / ('case5_' + str(caseID) + '/' + 'case5_' + str(caseID) + '.mat')
 
         try:
@@ -134,7 +145,10 @@ def checkCases(casesnum=250):
             print("Continue without this case")
             continue
 
-#checkCases()
+
+#casesnum=250
+#datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-2full/")
+#checkCases(casesnum, datapath)
 
 
 def loadSaveCSV():
@@ -196,6 +210,10 @@ def makeBaldFractures(datapath_x, dataname):
 
     np.save('test_X_bald.npy', new_data)
     print('Filename test_X_bald.npy is later renamed')
+
+
+
+print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
 
 #-----------------------------------------------------------------------------------------------------------------------
