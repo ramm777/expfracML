@@ -420,78 +420,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
     elif no == 10:
 
-
-        print('Multiple inputs Keras cnn architecture')
-
-        inputShape1 = (imsize_x, imsize_y, 1)  # image height, width and depth (no of channels, black/white = 1)
-        inputShape2 = (1,)
-        input1 = km.Input(shape=inputShape1)
-        input2 = km.Input(shape=inputShape2)
-
-        # 1st branch from first input, similar to CNN1
-        #-------------------------------------------------------------------------------------------------------
-        x = input1
-
-        x = Conv2D(32, (9, 9), padding="same")(x)
-        x = Activation("selu")(x)
-        x = BatchNormalization()(x)
-        x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
-
-        x = Conv2D(64, (7, 7), padding="same")(x)
-        x = Activation("selu")(x)
-        x = BatchNormalization()(x)
-        x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
-
-        x = Conv2D(128, (5, 5), padding="same")(x)
-        x = Activation("selu")(x)
-        x = BatchNormalization()(x)
-        x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
-
-        x = Conv2D(128, (3, 3), padding="same")(x)
-        x = Activation("selu")(x)
-        x = BatchNormalization()(x)
-        x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
-
-        x = Conv2D(64, (3, 3), padding="same")(x)
-        x = Activation("selu")(x)
-        x = BatchNormalization()(x)
-        x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
-
-        x = Flatten()(x)
-        x = Dense(64, activation="linear")(x)
-        x = Dense(32, activation="linear")(x)
-        x = Model(inputs=input1, outputs=x)
-
-
-        # the second branch opreates on the second input
-        # -------------------------------------------------------------------------------------------------------
-
-        y = km.Sequential()
-
-        y = Dense(32, activation="relu")(input2)
-        y = Dense(64, activation="relu")(y)
-        y = Dense(32, activation="relu")(y)
-        y = Dropout(0.5)(y)
-
-        y = Dense(32, activation="relu")(y)
-
-        y = Model(inputs=input2, outputs=y)
-
-
-        # -------------------------------------------------------------------------------------------------------
-
-        combined = concatenate([x.output, y.output])  # combine the output of the two branches
-
-        z = Dense(64, activation="relu")(combined)     # apply a FC layer and then a regression prediction on the combined outputs
-        z = Dense(64, activation="relu")(z)
-        z = Dense(32, activation="relu")(z)
-        z = Dropout(0.5)(z)
-
-        z = Dense(16, activation="relu")(z)
-        z = Dense(1, activation="linear")(z)
-
-        model = Model(inputs=[x.input, y.input], outputs=z)
-
+        print('ERROR: this cnn was deleted')
 
     elif no == 11:
 

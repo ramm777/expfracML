@@ -248,25 +248,24 @@ path_test = Path("data/TrainTest247_processed/Test37/Centered")       # Test X a
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                           # Number of training examples utilized in one iteration, larger is better
-epochs = 60
+epochs = 40
 augment = False                           # Keras augmentation
 CNNarchitecture = [11]                    # [1,4, ...]
-subcases = [1, 2, 3]                      # [1,2,3...]
+subcases = [1]                            # [1,2,3...]
 path_results = Path('results/')
 
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Run and save results
 
-losses = [float("NaN") for x in range(0, 11)]
-figures = []
 
 if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
     for j in range(0, len(CNNarchitecture)):
         for i in subcases:
 
-
+             figures = []
+             losses = [float("NaN") for x in range(0, 11)]
              str1 = 'CNNarchitecture: ' + str(CNNarchitecture[j])
              str2 = 'Subcase: ' + str(i)
              losses[0] = str1
@@ -295,15 +294,18 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
-    modelname = Path("run_cnn6_32.h5py")
-    modelpath = Path("selected_models/")
+    modelname = Path("run_cnn11_1.h5py")
+    modelpath = Path("selected_models1/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
     print('Continue training model: ' + modelname.name)
+
 
     assert len(CNNarchitecture) == 1
     assert int(modelname.stem[-4]) == CNNarchitecture[0]
 
     # Run training
+    figures = []
+    losses = [float("NaN") for x in range(0, 11)]
     model, result, figures, losses = runTraining(path_train, CNNarchitecture[0], imsize_x, imsize_y, batch_size, epochs, augment, losses, figures, trainedModel=model)
 
     modelname_new = Path(modelname.stem + "_cont" + ".h5py")
@@ -329,6 +331,8 @@ elif whatToRun == "singleTesting":  # Run single testing
     assert len(CNNarchitecture) == 1
     assert int(modelname.stem[-4]) == CNNarchitecture[0]
 
+    figures = []
+    losses = [float("NaN") for x in range(0, 11)]
     figures, losses = runTesting(path_test, CNNarchitecture[0], (modelpath / modelname), imsize_x, imsize_y, losses, figures)
     ff2.resultsToPDF(modelname, path_results, figures)
 
