@@ -55,7 +55,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     train_Y = train_Y.reshape(-1, 1)
     train_Y = train_Y.astype('float32')
 
-    if CNNarchitecture == 10 or CNNarchitecture == 11: # the only mixed-CNN
+    if CNNarchitecture == 11: # the only mixed-CNN
         train_S = np.loadtxt(datapath / "stress.csv")
         train_S = train_S / np.max(train_S)
         train_S = train_S.reshape(-1, 1)
@@ -83,13 +83,13 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     else:
         print('Continue training of pretrained model')
         print('Continue not possible at the modemnt => not finished')
-        #model = trainedModel
-        #model.summary()
+        model = trainedModel
+        model.summary()
 
 
     # Train_s => train stress, Valid_s => validation stress
     print('Train default (no keras data augmentation)')
-    if CNNarchitecture == 10 or CNNarchitecture == 11:
+    if CNNarchitecture == 11:
         result = model.fit(x=[Train_x, Train_s], y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=([Valid_x, Valid_s], Valid_y))
     else:
         result = model.fit(x=Train_x, y=Train_y, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(Valid_x, Valid_y))
@@ -237,7 +237,7 @@ def runTesting(datapath, CNNarchitecture, modelpath, imsize_x, imsize_y, losses,
 # Inputs for training
 
 
-whatToRun = "runBatches" # Select from: "continueTraining", "singleTesting", "runBatches"
+whatToRun = "continueTraining" # Select from: "continueTraining", "singleTesting", "runBatches"
 
 
 # Inputs 16000+2000 train/valid/test images (+augmentation)
@@ -301,7 +301,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
 
     assert len(CNNarchitecture) == 1
-    assert int(modelname.stem[-4]) == CNNarchitecture[0]
+    #assert int(modelname.stem[-4]) == CNNarchitecture[0]
 
     # Run training
     figures = []
@@ -316,7 +316,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 
     # Save results
     result_pd = pd.DataFrame(result.history)
-    with open(modelname_new[:-5] + ".csv", mode='w') as file:
+    with open(modelname_new.stem + ".csv", mode='w') as file:
         result_pd.to_csv(file)
 
     ff2.resultsToPDF(modelname_new, path_results, figures)
