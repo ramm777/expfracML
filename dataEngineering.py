@@ -152,6 +152,8 @@ def checkCases(casesnum, datapath):
             print("Continue without this case")
             continue
 
+    print('Finsihed checking and finding abscent cases from the matlab-idc simulation run')
+
 
 casesnum=250
 datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-3full/")

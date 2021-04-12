@@ -239,9 +239,9 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model.add(MaxPooling2D(pool_size=(2, 2), padding='same'))
 
         model.add(Flatten())
-        model.add(Dense(32,activation='linear'))
-        model.add(Dense(16, activation='linear'))
-        model.add(Dense(1, activation='linear'))
+        model.add(Dense(32,activation='selu'))
+        model.add(Dense(16, activation='selu'))
+        model.add(Dense(1, activation='selu'))
 
 
     elif no == 6: # ResNet50 as described in https://github.com/priya-dwivedi/Deep-Learning/blob/master/resnet_keras/Residual_Networks_yourself.ipynb
