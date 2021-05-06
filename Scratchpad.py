@@ -1,6 +1,7 @@
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
+import utils as ff
 
 
 def dummy():
@@ -25,8 +26,6 @@ def dummy():
         pdf.savefig(figures[i])
     pdf.close()
 
-dummy()
-
 
 
 def saveMultipleCurves():
@@ -37,6 +36,12 @@ def saveMultipleCurves():
     ax = fig.add_subplot()
     ax.plot([1,2,3,4,5], [1,2,3,4,5])
     ax.plot([10,20,30,40,50], [1,2,3,4,5])
+
+
+
+#dummy()
+ff.countlines(r'D:\expfracML')
+
 
 
 #-----------------------------------------------------------------------------------------------------------------------

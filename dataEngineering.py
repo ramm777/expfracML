@@ -156,7 +156,7 @@ def checkCases(casesnum, datapath):
 
 
 casesnum=250
-datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-3full/")
+datapath = Path("D:/mrst-2017a/modules/vemmech/RESULTS/Synthetic2/LMd_case5-6full/")
 checkCases(casesnum, datapath)
 
 

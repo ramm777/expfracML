@@ -91,21 +91,4 @@ def logDistr(x1, x2, exp, n):
     return y
 
 
-def convertToFlatUnits(pathFrom, pathTo):
-
-    data = np.loadtxt(pathFrom, delimiter=',', skiprows=1)
-
-    data[:, 0] = data[:, 0] / 1e9 # convert Pa => GPa
-    data[:, 3] = data[:, 3] * 1e6 # convert m => microns
-    data[:, 4] = data[:, 4] / 1e6 # convert Pa => MPa
-    data[:, 5] = data[:, 5] * 1e6 # convert m => microns
-
-    titles = np.array(['young_gpa', 'poisson', 'n_init', 'frac_volume_init_micron', 'stress_mpa', 'aperture_micron'])
-    titles = titles.reshape(1, titles.size)
-
-    f = np.savetxt(pathTo, titles, fmt="%s", delimiter=',')
-    f = open(pathTo, 'ab')
-    np.savetxt(f, data, delimiter=',')
-    f.close()
-
 
