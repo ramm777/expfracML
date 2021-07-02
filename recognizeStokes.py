@@ -55,7 +55,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     del train_X, train_Y
 
 
-    Train_x = Train_x.reshape(-1, imsize_x, imsize_y, 1) # No idea why this is needed, try without
+    Train_x = Train_x.reshape(-1, imsize_x, imsize_y, 1)
     Valid_x = Valid_x.reshape(-1, imsize_x, imsize_y, 1)
     Train_x = Train_x / 255.
     Valid_x = Valid_x / 255.
