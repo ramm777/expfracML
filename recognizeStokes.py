@@ -1,18 +1,3 @@
-# These imports is for linux to avoid multi-threading
-from sys import platform
-if platform == "linux":
-    import os
-    os.environ["NUMEXPR_MAX_THREADS"] = "1"
-    os.environ["OPENBLAS_NUM_THREADS"] = "1"
-    os.environ["NUMEXPR_NUM_THREADS"] = "1"
-    os.environ["MKL_NUM_THREADS"] = "1"
-    os.environ['OMP_NUM_THREADS'] = "1"
-    os.environ['BLIS_NUM_THREADS'] = "1"
-    os.environ['VECLIB_MAXIMUM_THREADS'] = "1"
-    os.environ['NUMBA_NUM_THREADS'] = "1"
-    os.environ['NUMEXPR_NUM_THREADS'] = "1"
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
@@ -65,7 +50,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     if trainedModel == []:
         print('Train new model')
         model = ff1.createCNNarchitecture(CNNarchitecture, imsize_x, imsize_y) # Create model and fit
-        model.compile(loss=keras.losses.mean_squared_error, optimizer=keras.optimizers.Adam())  # loss=keras.losses.mean_absolute_percentage_error
+        model.compile(loss=keras.losses.mean_squared_error, optimizer='adam')  # loss=keras.losses.mean_absolute_percentage_error
         model.summary()
     else:
         print('Continue training of pretrained model')
@@ -206,10 +191,10 @@ path_traintest = path_train
 imsize_x = 128
 imsize_y = 128
 batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
-epochs = 60
+epochs = 5
 augment = True                                          # Keras augmentation
 CNNarchitecture = [5]                                   # [1,4, ...]
-subcases = [7]                                          # [1,2,3...]
+subcases = [1]                                          # [1,2,3...]
 
 
 scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
@@ -306,3 +291,21 @@ else: print('Warning: select what to run')
 
 print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# APPENDIX
+
+# These imports is for linux to avoid multi-threading
+#from sys import platform
+#if platform == "linux":
+#    import os
+#    os.environ["NUMEXPR_MAX_THREADS"] = "1"
+#    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+#    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+#    os.environ["MKL_NUM_THREADS"] = "1"
+#    os.environ['OMP_NUM_THREADS'] = "1"
+#    os.environ['BLIS_NUM_THREADS'] = "1"
+#    os.environ['VECLIB_MAXIMUM_THREADS'] = "1"
+#    os.environ['NUMBA_NUM_THREADS'] = "1"
+#    os.environ['NUMEXPR_NUM_THREADS'] = "1"
