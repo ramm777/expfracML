@@ -295,7 +295,7 @@ if whatToRun == "runBatches": # Run batches of training/testing on many architec
 elif whatToRun == "continueTraining":  # Continue traning of pre-trained model and test it
 
     modelname = Path("run_cnn11_1.h5py")
-    modelpath = Path("selected_models1/")
+    modelpath = Path("selected_models_stresspermf/")
     model = km.load_model(modelpath / modelname, custom_objects=None, compile=True)
     print('Continue training model: ' + modelname.name)
 
@@ -325,7 +325,7 @@ elif whatToRun == "continueTraining":  # Continue traning of pre-trained model a
 elif whatToRun == "singleTesting":  # Run single testing
 
     modelname = Path("run_cnn5_20.h5py")
-    modelpath = Path("selected_models1/")
+    modelpath = Path("selected_models_stresspermf/")
     print('Single testing model: ' + modelname.name)
 
     assert len(CNNarchitecture) == 1

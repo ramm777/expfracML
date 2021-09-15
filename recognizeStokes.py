@@ -181,7 +181,7 @@ if __name__ == '__main__':
     # Inputs 16000+2000 train/valid/test images (+augmentation)
     path_train = Path("data/Train/Augmented_centered/")   # Train X and y data
     #path_test = Path("data/Test2000/Augmented_centered/") # Test X and y data, original
-    path_test = Path("data/Carmel_nodepth_test2000/Augmented_centered/")  # Test X and y data, No depth sample
+    path_test = Path("data/Carmel_nodepth_test2000/Augmented_centered/Bald/")  # Test X and y data, No depth sample
     path_traintest = path_train
 
 
@@ -266,10 +266,10 @@ if __name__ == '__main__':
         pdf.close()
 
 
-    elif whatToRun == "singleTesting":  # Run single testing
+    elif whatToRun == "singleTesting":
 
-        modelname = "model_cnn4_2.h5py"
-        modelpath = Path("selected_models/")
+        modelname = "model_cnn6_19.h5py"
+        modelpath = Path("selected_models_paper/Bald/")
 
         losses = [float("NaN") for x in range(0, 11)]
         fig2, losses = runTesting(path_test, (modelpath / modelname), imsize_x, imsize_y, scaler, losses)
