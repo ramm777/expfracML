@@ -32,15 +32,16 @@ def getScaler(datapath):
 
 def loadPreprocessImages(datapath_x, imnum, coarse_imsize_x, coarse_imsize_y):
     '''
-    Function to load all images, convert to grey, and collect to 3D ndarray ...
+    Function to load all images, convert to grey, and collect to 3D ndarray.
         Inputs:
             datapath - path to your images
             imnum - number of images to input
             coarse_imsize_x - coarse image size on x-axis
             coarse_imsize_y - coarse image size on y-axis
         Outputs:
-            train_X - features data ready for the model to be trained
+            train_X - features data saved as numpy file
     '''
+    print('Starting ... loadPreprocessImages() function')
 
     for i in range(1, imnum + 1):
 
