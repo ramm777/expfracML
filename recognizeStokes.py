@@ -15,6 +15,8 @@ from pathlib import Path
 import time
 import utils as ff
 import CNNarchitectures as ff1
+import plotFunctions as vis
+
 
 start = time.time()
 
@@ -149,15 +151,19 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     losses[5] = res4
 
 
+    # Convert units to Darcy
+    test_Y = test_Y*10
+    predicted_unscaled = predicted_unscaled*10
+
     # Plot
     fig2 = plt.figure(2, figsize=(15, 6))
     ax1 = fig2.add_subplot(121)
     ax2 = fig2.add_subplot(122)
     ax1.plot(test_Y, predicted_unscaled, 'r+', label='Predicted vs. Actual permeability')
     ax1.plot(test_Y, test_Y, label='Linear')
-    ax1.set_ylabel("Predicted permeability, md/1e4")
-    ax1.set_xlabel("Actual (test) permeability, md/1e4")
-    ax1.legend()
+    ax1.set_ylabel("Predicted permeability, D")
+    ax1.set_xlabel("Actual (test) permeability, D")
+    ax1.legend(frameon=False)
     fig2.text(0.6, 0.52, 'Results train/test: ')
     fig2.text(0.6, 0.5, losses[:2])
     fig2.text(0.6, 0.48, losses[2])
@@ -168,7 +174,6 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     plt.close()
 
     return fig2, losses
-
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Inputs for training
@@ -196,7 +201,7 @@ if __name__ == '__main__':
 
     scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
     path_results = Path('results/')
-
+    vis.setPlotStyles()
 
     #-----------------------------------------------------------------------------------------------------------------------
     # Run and save results
@@ -268,7 +273,7 @@ if __name__ == '__main__':
 
     elif whatToRun == "singleTesting":
 
-        modelname = "model_cnn6_19.h5py"
+        modelname = "model_cnn2_12.h5py"
         modelpath = Path("selected_models_paper/Bald/")
 
         losses = [float("NaN") for x in range(0, 11)]
