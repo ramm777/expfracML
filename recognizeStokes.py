@@ -181,12 +181,12 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
 if __name__ == '__main__':
 
-    whatToRun = "singleTesting" # Select from: "continueTraining", "singleTesting", "runBatches"
+    whatToRun = "singleTesting"  # Select from: "continueTraining", "singleTesting", "runBatches"
 
     # Inputs 16000+2000 train/valid/test images (+augmentation)
     path_train = Path("data/Train/Augmented_centered/")   # Train X and y data
-    #path_test = Path("data/Test2000/Augmented_centered/") # Test X and y data, original
-    path_test = Path("data/Carmel_nodepth_test2000/Augmented_centered/Bald/")  # Test X and y data, No depth sample
+    path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data, original
+    #path_test = Path("data/Carmel_nodepth_test2000/Augmented_centered/Bald/")  # Test X and y data, No depth Carmel sample
     path_traintest = path_train
 
 
@@ -286,13 +286,7 @@ if __name__ == '__main__':
 
     else: print('Warning: select what to run')
 
-
-    # Load and plot training results CSV file
-    #fig = ff2.loadPlotTrainResults('result_cnn2_12.csv')
-
-
     print('Finished. Runtime, min: ',  (time.time() - start) / 60)
-
 
 
 #-----------------------------------------------------------------------------------------------------------------------

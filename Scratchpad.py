@@ -1,7 +1,17 @@
 import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt
+
 import utils as ff
+import plotFunctions as vis
+
+
+
+# Load and plot training results CSV file
+vis.setPlotStyles()
+datapath = Path("selected_models_paper/Not_bald")
+fig = vis.loadPlotTrainResults(datapath / 'result_cnn6_11.csv')
+
 
 
 def dummy():
@@ -40,7 +50,7 @@ def saveMultipleCurves():
 
 
 #dummy()
-ff.countlines(r'D:\expfracML')
+#ff.countlines(r'D:\expfracML')
 
 
 

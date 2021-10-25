@@ -58,7 +58,7 @@ def loadPlotTrainResults(filename):
     ax1.set_yscale('log')
     ax1.title.set_text('Semi-log plot')
     ax1.legend()
-    ax1.set_ylabel("Loss")
+    ax1.set_ylabel("Loss, dimensionless")
     ax1.set_xlabel("Epochs")
     # ax2.plot(epochs, result.history['loss'], 'bo', label='Training loss')
     # ax2.plot(epochs, result.history['val_loss'], 'b', label='Validation loss')
