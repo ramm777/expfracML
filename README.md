@@ -7,6 +7,7 @@ Data is abscient as it is large ~3GB, please email me to recive the data until I
 Author: Aidan Kubeyev
 E-mail: 77777aidan@gmail.com
 
+
 Abstract:
 Rock fractures are complex structural discontinuities, where modelling involves solving the multi-scale and multi-physics phenomena. 
 Typically, the simulation of combined solid, fluid and chemical processes is computationally demanding. In this paper, I present a 
