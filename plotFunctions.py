@@ -84,3 +84,11 @@ def loadPlotTrainResults(filename):
 #ax2.imshow(doc_topic_dist)
 #ax1.title.set_text('Z (fitting results)')
 #ax2.title.set_text('doc_topic')
+
+# Subplots - quick way of plotting many subplots on one figure
+#fig, axs = plt.subplots(2,5, figsize=(15, 6), facecolor='w', edgecolor='k')
+#fig.subplots_adjust(hspace = .5, wspace=.001)
+#axs = axs.ravel()
+#for i in range(10):
+#    axs[i].imshow(x_train[i])
+#    axs[i].set_title(str(i))

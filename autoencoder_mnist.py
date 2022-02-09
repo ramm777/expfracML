@@ -61,10 +61,10 @@ img = Input(shape = (28, 28))
 latent_vector = encoder(img)
 output = decoder(latent_vector)
 
-model = Model(inputs = img, outputs = output)
-model.compile("nadam", loss = "binary_crossentropy")
-result = model.fit(x_train, x_train, epochs=50, verbose=1)
-model.save('decoder.h5py')
+decoder_m = Model(inputs = img, outputs = output)
+decoder_m.compile("nadam", loss ="binary_crossentropy")
+result = decoder_m.fit(x_train, x_train, epochs=50, verbose=1)
+decoder_m.save('decoder.h5py')
 
 
 # Make predictions and plot
@@ -83,9 +83,25 @@ for i in range(n_img):
 # You need to collect 2 zeros, 3 ones, two threes for the simple analysis
 
 
-# Encoder feature extraction - notice train data for now
-encoder = Model(inputs=img, outputs=latent_vector)
-encoded_output = encoder.predict(x_train[:10])
-model.save('encoder.h5py')
+# Encoder feature extraction - notice train data for now because we focus on features not reproducibility
+encoder_m = Model(inputs=img, outputs=latent_vector)
+encoded_output = encoder_m.predict(x_train[:10])
+encoder_m.save('encoder.h5py')
 
+
+fig, axs = plt.subplots(2,5, figsize=(15, 6), facecolor='w', edgecolor='k')
+fig.subplots_adjust(hspace = .5, wspace=.001)
+axs = axs.ravel()
+for i in range(10):
+    axs[i].imshow(x_train[i])
+    axs[i].set_title(str(i))
+
+# Select data to plot clusters
+a0, a1 = 2, 9  # label showing 4s - componets 0
+b0, b1 = 3, 8  # label showing 1s - component 1
+plt.plot(encoded_output[a0, :], encoded_output[b0, :], 'x')
+plt.plot(encoded_output[a1, :], encoded_output[b1, :], 'o')
+plt.xlabel('component 1')
+plt.ylabel('component 2')
+plt.legend(['1st two components', '2nd two components'])
 
