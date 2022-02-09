@@ -74,3 +74,13 @@ def loadPlotTrainResults(filename):
     #plt.close()
 
     return fig1
+
+
+# Subplots
+#fig2 = plt.figure(figsize=(6,6))
+#ax1 = fig2.add_subplot(1,2,1)
+#ax2 = fig2.add_subplot(1,2,2)
+#ax1.imshow(Z)
+#ax2.imshow(doc_topic_dist)
+#ax1.title.set_text('Z (fitting results)')
+#ax2.title.set_text('doc_topic')
