@@ -1,6 +1,7 @@
 # https://towardsdatascience.com/how-to-make-an-autoencoder-2f2d99cd5103
 # https://datascience.stackexchange.com/questions/64412/how-to-extract-features-from-the-encoded-layer-of-an-autoencoder
 # Try using mnist autoencoder for the GMM data
+# TODO transfer this to the separate project, taking venv from here.
 
 
 from tensorflow.keras.datasets import mnist
@@ -104,4 +105,16 @@ plt.plot(encoded_output[a1, :], encoded_output[b1, :], 'o')
 plt.xlabel('component 1')
 plt.ylabel('component 2')
 plt.legend(['1st two components', '2nd two components'])
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Import model and work with it
+import keras.models as km
+encoder_m = km.load_model('encoder.h5py')
+
+
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+x_train = x_train/255.0
+x_test = x_test/255.0
+
 
