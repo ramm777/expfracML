@@ -81,7 +81,7 @@ def logDistr(x1, x2, exp, n):
        y - logarithmic distribution, a row vector of 'n' log spaced points between x1 and x2.
 
      AUTHOR:
-       Amanzhol Kubeyev
+     Aidan (Amanzhol) Kubeyev
 
     '''
 
