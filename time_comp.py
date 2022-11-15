@@ -17,7 +17,6 @@ import utils as ff
 import CNNarchitectures as ff1
 import plotFunctions as vis
 
-import recognizeStokes as rs
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -80,8 +79,9 @@ print('Time, min: ',  (time.time() - start)/60 )
 time = pd.read_excel('comp_time.xlsx')
 
 fig, ax = plt.subplots()
-ax.plot(time['n_runs'], time['time_numerical_min'], '-x')
-ax.plot(time['n_runs'], time['time_cnn_min'], '-x')
-plt.xlabel('Number of iterations')
-plt.ylabel('Computation time, min')
+ax.plot(time['n_runs'], time['time_numerical_min'], '-o')
+ax.plot(time['n_runs'], time['time_cnn_min'], '-o')
+plt.xlabel('Number of iterations', fontsize=16)
+plt.ylabel('Computation time, min', fontsize=16)
+plt.legend(['Numerical Simulation', 'Convolutional Neural Network'], frameon=False)
 
