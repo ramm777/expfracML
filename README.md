@@ -1,21 +1,13 @@
 # expfracML
 
-These are the files for the project "Deep Learning for Identification of Permeability in Rough Fractures". 
+These are the files for the project and a paper "Deep Learning to Predict Permeability Through Rough Fractures for Multi-Physics Modelling". 
 
-Data is abscient as it is large ~3GB, please email me to recive the data until I sort out how to make it publicly availible. 
+Data is missing here as it is large ~3GB, please email me to recive the data until I sort out how to make it publicly availible. 
 
 Author: Aidan Kubeyev
 E-mail: 77777aidan@gmail.com
 
 
 Abstract:
-Rock fractures are complex structural discontinuities, where modelling involves solving the multi-scale and multi-physics phenomena. 
-Typically, the simulation of combined solid, fluid and chemical processes is computationally demanding. In this paper, I present a 
-data-driven deep learning modelling approach that inputs a digital image of a rough fracture with a complicated surface and predicts
-the permeability through it. Besides, I investigate the ability of the Convolutional Neural Network (CNN), a type of deep learning, 
-to be used in a regression framework, predicting a continuous rough fracture permeability. Fracture images were created using a 
-digitalized rough fracture surface from a mudrock core. For the machine learning training, fracture permeability was calculated using
-the Stokes equation and the Finite Volume discretisation. I investigate two scenarios: when the fracture fluid velocity field is provided 
-for the CNN to train, and a more difficult scenario when the velocity field is not provided. I find that deep learning can learn from 
-cross-sectional images of fractures to predict fracture permeability without fluid velocity, achieving an accuracy of 97%. Overall, the 
-approach can improve the multi-physics modelling computational time, and deep learning can be used for regression in geosciences. 
+Numerical modelling of fractures or other complex structural discontinuities is computationally demanding. Typically, it involves solving the multi-scale and multi-physics phenomena, simulating combined solid, fluid, thermal and chemical processes. To address long computation times limiting assumptions, simplifications or conceptualizations have to be made. In multi-physics modelling, it is desirable to predict certain parameters quickly without making simplifications. In this paper, a data-driven deep learning modelling approach is presented that learns to predict physical permeability parameters through a fracture with complicated geometry based on a digital image.
+Besides, this study investigates the ability of the Convolutional Neural Network (CNN), a type of deep learning, to be used in a regression framework, to predict a continuous value. Images of fractures were generated using a digitalised rough fracture surface from a subsurface rock. For the training and testing, permeability was calculated using the Stokes equation and the Finite Volume discretisation. Two cases were investigated: when the fracture fluid velocity field is provided for the CNN to train, and a more difficult case when the velocity field is not provided. It was found that deep learning can learn from cross-sectional images of fractures to predict permeability without fluid velocity provided, achieving high accuracy. It was also found that the CNN generalises well, accurately predicting the permeability of significantly different fractures, parametrised by roughness. Overall, the approach can reduce the computation time during multi-physics modelling and can be used to predict continuous physical permeability values of a fracture with a complex surface from an image. }
