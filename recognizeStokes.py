@@ -185,7 +185,7 @@ if __name__ == '__main__':
 
     # Inputs 16000+2000 train/valid/test images (+augmentation)
     path_train = Path("data/Train/Augmented_centered/")   # Train X and y data
-    path_test = Path("data/Test2000/Augmented_centered/Bald") # Test X and y data, original
+    path_test = Path("data/Test2000/Augmented_centered/") # Test X and y data, original
     #path_test = Path("data/Carmel_nodepth_test2000/Augmented_centered/Bald/")  # Test X and y data, No depth Carmel sample
     path_traintest = path_train
 
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
     epochs = 5
     augment = True                                          # Keras augmentation
-    CNNarchitecture = [5]                                   # [1,4, ...]
+    CNNarchitecture = [6]                                   # [1,4, ...]
     subcases = [1]                                          # [1,2,3...]
 
 

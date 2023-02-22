@@ -1,0 +1,6 @@
+for i in {1..40} 
+do 
+cd case$i
+qsub simulation.sh
+cd /home/ak87/mrst-2017a/modules/vemmech/expfrac/Carmel/ML/
+done
