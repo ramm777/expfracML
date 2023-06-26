@@ -18,9 +18,6 @@ from keras.utils.vis_utils import model_to_dot
 #from keras.utils import plot_model
 # from resnets_utils import *
 from keras.initializers import glorot_uniform
-import scipy.misc
-from matplotlib.pyplot import imshow
-
 import keras.backend as K
 
 K.set_image_data_format('channels_last')
@@ -31,6 +28,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
     '''
     Create CNN model having architecture of several layers
     no - architecture number
+    ResNet50 is no.6 (as described in https://github.com/priya-dwivedi/Deep-Learning/blob/master/resnet_keras/Residual_Networks_yourself.ipynb)
     '''
 
     if no == 1:
@@ -209,7 +207,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model = km.Model(inputs, x)
 
 
-    elif no == 5: # Similar to cnn1 but Ahmed's suggestion
+    elif no == 5: # Similar to cnn1 but more standard
 
         model = km.Sequential()
 
@@ -245,7 +243,6 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
 
 
     elif no == 6: # ResNet50 as described in https://github.com/priya-dwivedi/Deep-Learning/blob/master/resnet_keras/Residual_Networks_yourself.ipynb
-
 
         def identity_block(X, f, filters, stage, block):
             """
@@ -376,15 +373,13 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
             X = identity_block(X, 3, [64, 64, 256], stage=2, block='b')
             X = identity_block(X, 3, [64, 64, 256], stage=2, block='c')
 
-            ### START CODE HERE ###
-
-            # Stage 3 (≈4 lines)
+            # Stage 3
             X = convolutional_block(X, f=3, filters=[128, 128, 512], stage=3, block='a', s=2)
             X = identity_block(X, 3, [128, 128, 512], stage=3, block='b')
             X = identity_block(X, 3, [128, 128, 512], stage=3, block='c')
             X = identity_block(X, 3, [128, 128, 512], stage=3, block='d')
 
-            # Stage 4 (≈6 lines)
+            # Stage 4
             X = convolutional_block(X, f=3, filters=[256, 256, 1024], stage=4, block='a', s=2)
             X = identity_block(X, 3, [256, 256, 1024], stage=4, block='b')
             X = identity_block(X, 3, [256, 256, 1024], stage=4, block='c')
@@ -392,7 +387,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
             X = identity_block(X, 3, [256, 256, 1024], stage=4, block='e')
             X = identity_block(X, 3, [256, 256, 1024], stage=4, block='f')
 
-            # Stage 5 (≈3 lines)
+            # Stage 5
             X = convolutional_block(X, f=3, filters=[512, 512, 2048], stage=5, block='a', s=2)
             X = identity_block(X, 3, [512, 512, 2048], stage=5, block='b')
             X = identity_block(X, 3, [512, 512, 2048], stage=5, block='c')
@@ -400,17 +395,12 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
             # AVGPOOL (≈1 line). Use "X = AveragePooling2D(...)(X)"
             X = AveragePooling2D((2, 2), name="avg_pool")(X)
 
-            ### END CODE HERE ###
-
             # output layer
             X = Flatten()(X)
             X = Dense(32)(X) # Aman added
             X = Dense(classes, name='fc' + str(classes), kernel_initializer=glorot_uniform(seed=0))(X)
 
-
-            # Create model
             model = Model(inputs=X_input, outputs=X, name='ResNet50')
-
             return model
 
         # Call functions to build ResNet50
@@ -418,9 +408,7 @@ def createCNNarchitecture(no, imsize_x, imsize_y):
         model = ResNet50(input_shape = inputShape, classes = 1)
 
 
-    elif no == 10:
-
-        print('ERROR: this cnn was deleted')
+    elif no == 10: print('ERROR: this cnn was deleted')
 
     elif no == 11:
 

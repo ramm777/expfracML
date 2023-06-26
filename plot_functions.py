@@ -1,7 +1,5 @@
-import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from pathlib import Path
 import pandas as pd
 
 def setPlotStyles():
@@ -23,7 +21,6 @@ def setPlotStyles():
     plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-
     # plt.rc('font', family='serif')
 
     return
@@ -45,6 +42,11 @@ def loadPlotTrainResults(filename):
 
     '''
     Function to load and plot training results of your ML model saved as .csv file
+    Example:
+        Load and plot training results CSV file
+        vis.setPlotStyles()
+        datapath = Path("selected_models_paper/Not_bald")
+        fig = vis.loadPlotTrainResults(datapath / 'result_cnn6_11.csv')
     '''
 
     data = pd.read_csv(filename)
@@ -52,7 +54,7 @@ def loadPlotTrainResults(filename):
 
     fig1 = plt.figure(1, figsize=(15, 6))
     ax1 = fig1.add_subplot(121)
-    ax2 = fig1.add_subplot(122)
+    #ax2 = fig1.add_subplot(122)
     ax1.plot(epochs, data['loss'], 'bo', label='Training loss')
     ax1.plot(epochs, data['val_loss'], 'b', label='Validation loss')
     ax1.set_yscale('log')
@@ -75,20 +77,3 @@ def loadPlotTrainResults(filename):
 
     return fig1
 
-
-# Subplots
-#fig2 = plt.figure(figsize=(6,6))
-#ax1 = fig2.add_subplot(1,2,1)
-#ax2 = fig2.add_subplot(1,2,2)
-#ax1.imshow(Z)
-#ax2.imshow(doc_topic_dist)
-#ax1.title.set_text('Z (fitting results)')
-#ax2.title.set_text('doc_topic')
-
-# Subplots - quick way of plotting many subplots on one figure
-#fig, axs = plt.subplots(2,5, figsize=(15, 6), facecolor='w', edgecolor='k')
-#fig.subplots_adjust(hspace = .5, wspace=.001)
-#axs = axs.ravel()
-#for i in range(10):
-#    axs[i].imshow(x_train[i])
-#    axs[i].set_title(str(i))

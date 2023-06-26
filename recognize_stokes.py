@@ -4,24 +4,21 @@ import matplotlib
 matplotlib.use('Agg') # For the saving purposes. To revert use matplotlib.use('TkAgg')
 from matplotlib.backends.backend_pdf import PdfPages
 from sklearn.model_selection import train_test_split
+import pandas as pd
+from pathlib import Path
 
 import keras
 import keras.models as km
 from keras.preprocessing.image import ImageDataGenerator
 
-import pandas as pd
-from pathlib import Path
-
 import time
 import utils as ff
-import CNNarchitectures as ff1
-import plotFunctions as vis
+import cnn_architectures as ff1
+import plot_functions as vis
 
 
 start = time.time()
-
-
-def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment,losses, trainedModel=[]):
+def run_training(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment,losses, trainedModel=[]):
     '''
     Load training data, split to validation and training and run training and save trained model
     '''
@@ -30,23 +27,19 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     train_X = np.load(datapath / "train_X.npy")
     train_X = train_X.astype('float32')
 
-
     train_Y = np.loadtxt(datapath / "permf.csv")
     train_Y = train_Y / 1e4  # convert to 'mD/1e4'
     train_Y = train_Y.reshape(-1, 1)
     train_Y_scaled = scaler.transform(train_Y)
     # data_unscaled = scaler.inverse_transform(data_scaled) # to unscale the data back
 
-
     Train_x, Valid_x, Train_y, Valid_y = train_test_split(train_X, train_Y_scaled, test_size=0.25, random_state=42)
     del train_X, train_Y
-
 
     Train_x = Train_x.reshape(-1, imsize_x, imsize_y, 1)
     Valid_x = Valid_x.reshape(-1, imsize_x, imsize_y, 1)
     Train_x = Train_x / 255.
     Valid_x = Valid_x / 255.
-
 
     # Define (create) CNN model or load pre-trained
     if trainedModel == []:
@@ -59,7 +52,6 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
         model = trainedModel
         model.summary()
 
-
     # Train either by default or by using augmentation in Keras
     if augment == False:
         print('Train default (no keras data augmentation)')
@@ -69,7 +61,6 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
         datagen = ImageDataGenerator(rotation_range=90)
         it = datagen.flow(Train_x, Train_y, batch_size = batch_size)
         result = model.fit(it, validation_data=(Valid_x, Valid_y), steps_per_epoch=np.ceil(len(Train_y)/batch_size), epochs=epochs)
-
 
     # Plot loss and accuracy
     epochs = np.array(result.epoch)
@@ -106,7 +97,7 @@ def runTraining(datapath, CNNarchitecture, imsize_x, imsize_y, batch_size, epoch
     return model, result, fig1, losses
 
 
-def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
+def run_testing(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     '''
     Load saved ML model and testing data and run evaluation and prediction
         Inputs:
@@ -127,19 +118,15 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     test_X = test_X.reshape(-1, imsize_x, imsize_y, 1)
     test_X = test_X / 255.
 
-
     test_Y = np.loadtxt(datapath / "permf.csv")
     test_Y = test_Y / 1e4  # convert to 'mD/1e4'
     test_Y = test_Y.reshape(-1, 1)
     test_Y_scaled = scaler.transform(test_Y)
 
-
     model = km.load_model(modelpath, custom_objects=None, compile=True)
-
 
     predicted = model.predict(test_X)
     predicted_unscaled = scaler.inverse_transform(predicted)  # to unscale the data back
-
 
     test_loss = model.evaluate(test_X, test_Y_scaled, verbose=1)
     mape = ff.mape(test_Y, predicted_unscaled)
@@ -150,12 +137,10 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     losses[4] = res3
     losses[5] = res4
 
-
     # Convert units to Darcy
     test_Y = test_Y*10
     predicted_unscaled = predicted_unscaled*10
 
-    # Plot
     fig2 = plt.figure(2, figsize=(15, 6))
     ax1 = fig2.add_subplot(121)
     ax2 = fig2.add_subplot(122)
@@ -170,10 +155,43 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
     fig2.text(0.6, 0.46, losses[3])
     fig2.text(0.6, 0.44, losses[4])
     fig2.text(0.6, 0.42, losses[5])
-    # plt.show()
+    #plt.show()
     plt.close()
 
     return fig2, losses
+
+def run_batches(path_train, path_test, path_results, imsize_x, imsize_y, batch_size, epochs, augment, CNNarchitecture, subcases, scaler):
+    for cnn_architecture in CNNarchitecture:
+        for subcase in subcases:
+            losses = [float("NaN")] * 11
+            str1 = f'CNNarchitecture: {cnn_architecture}'
+            str2 = f'Subcase: {subcase}'
+            losses[0] = str1
+            losses[1] = str2
+            print(f"Starting ...\n{str1}\n{str2}")
+
+            # Run training
+            model, result, fig1, losses = run_training(path_train, cnn_architecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
+            modelname = f"model_cnn{cnn_architecture}_{subcase}.h5py"
+            model.save(modelname)
+
+            # Save results
+            result_pd = pd.DataFrame(result.history)
+            with open(f"result_cnn{cnn_architecture}_{subcase}.csv", mode='w') as file:
+                result_pd.to_csv(file)
+
+            # Run testing
+            modelpath = modelname
+            fig2, losses = run_testing(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
+
+            # Save plots to pdf
+            pdfname = f"results{cnn_architecture}_{subcase}.pdf"
+            pdf = PdfPages(path_results / pdfname)
+            pdf.savefig(fig1)
+            pdf.savefig(fig2)
+            pdf.close()
+
+            del fig1, fig2, model
 
 #-----------------------------------------------------------------------------------------------------------------------
 # Inputs for training
@@ -181,23 +199,20 @@ def runTesting(datapath, modelpath, imsize_x, imsize_y, scaler, losses):
 
 if __name__ == '__main__':
 
-    whatToRun = "singleTesting"  # Select from: "continueTraining", "singleTesting", "runBatches"
+    whatToRun = "runBatches"  # Select from: "continueTraining", "singleTesting", "runBatches"
 
     # Inputs 16000+2000 train/valid/test images (+augmentation)
     path_train = Path("data/Train/Augmented_centered/")   # Train X and y data
     path_test = Path("data/Test2000/Augmented_centered/") # Test X and y data, original
-    #path_test = Path("data/Carmel_nodepth_test2000/Augmented_centered/Bald/")  # Test X and y data, No depth Carmel sample
     path_traintest = path_train
-
 
     imsize_x = 128
     imsize_y = 128
     batch_size = 16                                         # Number of training examples utilized in one iteration, larger is better
     epochs = 5
     augment = True                                          # Keras augmentation
-    CNNarchitecture = [6]                                   # [1,4, ...]
+    CNNarchitecture = [6]                                   # [1,4, ...], 6 is ResNet50
     subcases = [1]                                          # [1,2,3...]
-
 
     scaler = ff.getScaler(path_traintest)  # Scale from 0 to 1
     path_results = Path('results/')
@@ -205,7 +220,6 @@ if __name__ == '__main__':
 
     #-----------------------------------------------------------------------------------------------------------------------
     # Run and save results
-
 
     if whatToRun == "runBatches": # Run batches of training/testing on many architectures/iterations
 
@@ -221,7 +235,7 @@ if __name__ == '__main__':
 
 
                  # Run training
-                 model, result, fig1, losses = runTraining(path_train, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
+                 model, result, fig1, losses = run_training(path_train, CNNarchitecture[j], imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses)
                  modelname = "model_cnn" + str(CNNarchitecture[j]) + "_" + str(i) + ".h5py"
                  model.save(modelname)
 
@@ -232,7 +246,7 @@ if __name__ == '__main__':
 
                  # Run testing
                  modelpath = modelname
-                 fig2, losses = runTesting(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
+                 fig2, losses = run_testing(path_test, modelpath, imsize_x, imsize_y, scaler, losses)
 
                  # Save plots to pdf
                  pdfname = "results" + str(CNNarchitecture[j]) + "_" + str(i) + ".pdf"
@@ -252,12 +266,12 @@ if __name__ == '__main__':
 
         # Run training
         losses = [float("NaN") for x in range(0, 11)]
-        model, result, fig1, losses = runTraining(path_train, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses, trainedModel=model)
+        model, result, fig1, losses = run_training(path_train, CNNarchitecture, imsize_x, imsize_y, batch_size, epochs, scaler, augment, losses, trainedModel=model)
         modelname_new = modelname[:-5] + "_cont" + ".h5py"
         model.save(modelname_new)
 
         # Run testing
-        fig2, losses = runTesting(path_test, modelname_new, imsize_x, imsize_y, scaler, losses=losses)
+        fig2, losses = run_testing(path_test, modelname_new, imsize_x, imsize_y, scaler, losses=losses)
 
         # Save results
         result_pd = pd.DataFrame(result.history)
@@ -277,7 +291,7 @@ if __name__ == '__main__':
         modelpath = Path("selected_models_paper/Bald/")
 
         losses = [float("NaN") for x in range(0, 11)]
-        fig2, losses = runTesting(path_test, (modelpath / modelname), imsize_x, imsize_y, scaler, losses)
+        fig2, losses = run_testing(path_test, (modelpath / modelname), imsize_x, imsize_y, scaler, losses)
 
         pdfname = modelname[:-5] + ".pdf"
         pdf = PdfPages(path_results / pdfname )  # Save results to pdf
@@ -288,20 +302,3 @@ if __name__ == '__main__':
 
     print('Finished. Runtime, min: ',  (time.time() - start) / 60)
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# APPENDIX
-
-# These imports is for linux to avoid multi-threading
-#from sys import platform
-#if platform == "linux":
-#    import os
-#    os.environ["NUMEXPR_MAX_THREADS"] = "1"
-#    os.environ["OPENBLAS_NUM_THREADS"] = "1"
-#    os.environ["NUMEXPR_NUM_THREADS"] = "1"
-#    os.environ["MKL_NUM_THREADS"] = "1"
-#    os.environ['OMP_NUM_THREADS'] = "1"
-#    os.environ['BLIS_NUM_THREADS'] = "1"
-#    os.environ['VECLIB_MAXIMUM_THREADS'] = "1"
-#    os.environ['NUMBA_NUM_THREADS'] = "1"
-#    os.environ['NUMEXPR_NUM_THREADS'] = "1"

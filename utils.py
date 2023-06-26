@@ -148,11 +148,6 @@ def dataAugmentation(train_X, train_Y):
 
     return train_X, train_Y
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Third party
-
-
 def countlines(start, lines=0, header=True, begin_start=None):
     if header:
         print('{:>10} |{:>10} | {:<20}'.format('ADDED', 'TOTAL', 'FILE'))
