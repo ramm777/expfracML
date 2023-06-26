@@ -15,18 +15,19 @@ Numerical modelling of complex structural discontinuities such as fractures is c
 
 
 # Train
-- recognizeStokes.py - the main file to run the training. 
-- CNNarchitectures.py - file for the various CNN architectures. 
+- recognize_stokes.py - the main file to run the training. 
+- cnn_architectures.py - file for the various CNN architectures. 
 - data_preprocessing.py - data pre-processing scripts.
-- functions1.py - utility functions for the project. 
-- plotFunctions.py - functions for visualizations. 
+- functions.py - utility functions for the project. 
+- plot_functions.py - functions for visualizations. 
 
 
 # Create images using Matlab and discretisation. 
 - createManyFracImages.m - key file to create images for the training
 
 # References
-@article{kubeyev2023enhancing,
+`
+@article{kubeyev2023enhancing, 
   title={Enhancing multi-physics modelling with deep learning: Predicting permeability through structural discontinuities},
   author={Kubeyev, Amanzhol},
   journal={Engineering Applications of Artificial Intelligence},
@@ -35,3 +36,4 @@ Numerical modelling of complex structural discontinuities such as fractures is c
   year={2023},
   publisher={Elsevier}
 }
+`
